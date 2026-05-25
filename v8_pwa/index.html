@@ -1,0 +1,3486 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kotoba Learn</title>
+<meta name="theme-color" content="#1a6b4a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kotoba Learn">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Green theme for language learning (distinct from rehab purple) */
+  --bg:#f4f7f4;
+  --surface:#ffffff;
+  --surface2:#edf4ee;
+  --surface3:#dceedd;
+  --border:rgba(0,0,0,0.08);
+  --border2:rgba(0,0,0,0.14);
+  --text:#1a2e1c;
+  --text2:#4a6b4c;
+  --text3:#7a9b7c;
+  --green:#1a6b4a;
+  --green2:#2a8b5a;
+  --green-light:#edf4ee;
+  --green-mid:#c0e0c8;
+  --gold:#b8860b;
+  --gold2:#e8c040;
+  --blue:#2060a0;
+  --blue-light:#e0eaf8;
+  --red:#b03030;
+  --red-light:#fceaea;
+  --amber:#c07010;
+  --amber-light:#fef4e0;
+  --r:10px;--r-lg:16px;--r-xl:22px;
+  --shadow:0 2px 10px rgba(26,46,28,0.08);
+  --shadow-lg:0 4px 20px rgba(26,46,28,0.14);
+}
+body{
+  font-family:'Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+*{-webkit-tap-highlight-color:transparent}
+button,input{touch-action:manipulation;font-family:inherit}
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* ========================
+   LANGUAGE SELECT SCREEN
+======================== */
+#screen-lang{flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(160deg,#1a6b4a 0%,#2a8b5a 40%,#1a5038 100%);padding:32px 24px;}
+#screen-lang.active{display:flex!important}
+.lang-logo{font-size:48px;margin-bottom:8px}
+.lang-app-name{font-size:28px;font-weight:700;color:#fff;letter-spacing:0.04em;margin-bottom:4px}
+.lang-tagline{font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:40px;text-align:center}
+.lang-section-label{font-size:12px;color:rgba(255,255,255,0.6);letter-spacing:0.06em;margin-bottom:12px;text-transform:uppercase;align-self:flex-start;max-width:420px;width:100%}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:420px;margin-bottom:24px}
+.lang-card{
+  background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);
+  border-radius:var(--r-lg);padding:16px 12px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  transition:all 0.15s;color:#fff;
+}
+.lang-card:hover,.lang-card.selected{
+  background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.6);
+  transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.2);
+}
+.lang-card.selected{background:rgba(255,255,255,0.3);border-color:#fff}
+.lang-flag{font-size:32px}
+.lang-name{font-size:15px;font-weight:700}
+.lang-native{font-size:12px;opacity:0.7}
+.lang-start-btn{
+  width:100%;max-width:420px;padding:16px;border-radius:var(--r-xl);
+  border:none;background:#fff;color:var(--green);
+  font-size:17px;font-weight:700;cursor:pointer;
+  transition:opacity 0.15s;letter-spacing:0.02em;
+  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+}
+.lang-start-btn:hover{opacity:0.92}
+.lang-divider{width:100%;max-width:420px;display:flex;align-items:center;gap:10px;margin:8px 0}
+.lang-divider::before,.lang-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.2)}
+.lang-divider span{font-size:12px;color:rgba(255,255,255,0.5)}
+
+/* ========================
+   MAP SCREEN
+======================== */
+#screen-map{background:var(--bg)}
+.map-header{
+  background:var(--green);color:#fff;
+  padding:calc(12px + env(safe-area-inset-top)) 20px 12px;
+}
+.map-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.app-logo{display:flex;align-items:center;gap:8px}
+.app-logo-icon{font-size:22px}
+.app-logo-text{font-size:17px;font-weight:700;letter-spacing:0.02em}
+.header-actions{display:flex;align-items:center;gap:8px}
+.lang-switch-btn{
+  font-size:12px;padding:5px 10px;border-radius:20px;
+  border:1.5px solid rgba(255,255,255,0.4);
+  background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;
+  transition:background 0.12s;
+}
+.lang-switch-btn:hover{background:rgba(255,255,255,0.25)}
+.xp-row{display:flex;align-items:center;gap:8px}
+.xp-bar{flex:1;height:5px;background:rgba(255,255,255,0.25);border-radius:3px;overflow:hidden}
+.xp-fill{height:100%;background:var(--gold2);border-radius:3px;transition:width 0.5s}
+.xp-txt{font-size:12px;color:rgba(255,255,255,0.8);white-space:nowrap}
+.streak-row{display:flex;align-items:center;gap:6px;margin-top:4px}
+.streak-chip{font-size:12px;color:rgba(255,255,255,0.8)}
+
+.map-body{padding:16px;max-width:580px;margin:0 auto}
+.chapter-card{
+  background:var(--surface);border-radius:var(--r-xl);
+  border:1px solid var(--border2);box-shadow:var(--shadow);
+  margin-bottom:14px;overflow:hidden;cursor:pointer;
+  transition:transform 0.14s,box-shadow 0.18s;
+}
+.chapter-card:hover:not(.locked){transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.chapter-card.locked{opacity:0.55;cursor:not-allowed;filter:grayscale(0.3)}
+.chapter-card.current-ch{border-color:var(--green);box-shadow:0 0 0 2px var(--green-mid),var(--shadow-lg)}
+.chapter-scene{height:90px;position:relative;overflow:hidden}
+.chapter-scene svg{width:100%;height:100%}
+.chapter-scene-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(26,46,28,0.6))}
+.chapter-scene-text{
+  position:absolute;bottom:8px;left:14px;right:14px;
+  display:flex;align-items:flex-end;justify-content:space-between;
+  color:#fff;
+}
+.ch-num{font-size:10px;opacity:0.7}
+.ch-title{font-size:15px;font-weight:700}
+.ch-progress{font-size:12px;opacity:0.8}
+.chapter-body{padding:12px 16px}
+.chapter-desc{font-size:13px;color:var(--text3);margin-bottom:10px;line-height:1.5}
+.stages-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stage-pip{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;cursor:pointer;
+  border:1.5px solid;transition:transform 0.12s;position:relative;
+}
+.stage-pip:hover:not(.pip-locked){transform:scale(1.1)}
+.pip-done{background:var(--green-light);border-color:var(--green);color:var(--green)}
+.pip-current{
+  background:#fff;border-color:var(--green);color:var(--green);
+  box-shadow:0 0 0 3px var(--green-mid),0 0 10px rgba(26,107,74,0.3);
+  animation:pip-pulse 2s infinite;
+}
+@keyframes pip-pulse{0%,100%{box-shadow:0 0 0 3px var(--green-mid)}50%{box-shadow:0 0 0 5px rgba(26,107,74,0.15)}}
+.pip-open{background:var(--surface2);border-color:var(--border2);color:var(--text3)}
+.pip-locked{background:var(--surface2);border-color:var(--border);color:var(--border2);cursor:not-allowed}
+.pip-star{position:absolute;top:-5px;right:-5px;font-size:8px}
+.lock-notice{
+  font-size:11px;color:var(--text3);padding:4px 10px;
+  background:var(--surface2);border-radius:20px;border:1px solid var(--border);
+}
+
+/* ========================
+   PRACTICE SCREEN
+======================== */
+#screen-practice{background:var(--bg)}
+.prac-header{
+  background:var(--green);color:#fff;
+  padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.back-btn{
+  font-size:13px;padding:6px 12px;border-radius:var(--r);
+  border:1.5px solid rgba(255,255,255,0.35);
+  background:rgba(255,255,255,0.12);color:#fff;cursor:pointer;
+}
+.back-btn:hover{background:rgba(255,255,255,0.22)}
+.prac-title{text-align:center}
+.prac-title-main{font-size:14px;font-weight:700}
+.prac-title-sub{font-size:11px;opacity:0.75;margin-top:2px}
+.hearts{display:flex;gap:2px;font-size:15px}
+
+.q-progress-wrap{padding:10px 16px 0;max-width:580px;margin:0 auto}
+.q-bar{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden}
+.q-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));border-radius:3px;transition:width 0.4s}
+.q-info{display:flex;justify-content:space-between;margin-top:5px;font-size:12px;color:var(--text3)}
+
+.prac-body{padding:14px 16px 48px;max-width:580px;margin:0 auto}
+.alert-box{
+  padding:10px 14px;border-radius:var(--r);font-size:13px;
+  background:var(--amber-light);color:var(--amber);
+  border:1px solid var(--gold2);margin-bottom:10px;display:none;
+}
+.q-card{
+  background:var(--surface);border-radius:var(--r-xl);
+  border:1px solid var(--border2);box-shadow:var(--shadow);
+  padding:22px 18px;display:flex;flex-direction:column;
+  align-items:center;gap:14px;
+}
+.q-type-badge{
+  font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;
+  letter-spacing:0.04em;
+}
+.badge-speak{background:#e0f0e8;color:var(--green)}
+.badge-listen{background:var(--blue-light);color:var(--blue)}
+.badge-read{background:#f0eaf8;color:#6040a0}
+.badge-write{background:var(--amber-light);color:var(--amber)}
+
+/* target display */
+.target-main{
+  font-size:46px;font-weight:700;color:var(--text);
+  text-align:center;line-height:1.15;letter-spacing:0.02em;
+}
+.target-main.en{
+  font-family:'Georgia','Times New Roman',serif;
+  font-style:italic;letter-spacing:0.01em;
+}
+.target-sub{
+  font-size:16px;color:var(--text3);text-align:center;
+  font-style:normal;
+}
+.target-hint{font-size:13px;color:var(--text3);text-align:center;line-height:1.5}
+
+/* picture card */
+.pic-frame{
+  width:140px;height:140px;border-radius:var(--r-lg);
+  background:var(--surface2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:border-color 0.15s,background 0.15s;
+}
+.pic-frame:hover,.pic-frame.playing{border-color:var(--green);background:var(--green-light)}
+.pic-frame svg{width:80px;height:80px}
+
+/* tts */
+.tts-row{display:flex;align-items:center;gap:8px;width:100%}
+.tts-lbl{font-size:12px;color:var(--text3);min-width:38px}
+.tts-val{font-size:12px;color:var(--text3);min-width:26px;text-align:right}
+input[type=range]{flex:1;height:3px;accent-color:var(--green);cursor:pointer}
+.btn-play{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  width:100%;padding:11px;border-radius:var(--r-lg);
+  border:1px solid var(--border2);background:var(--surface2);
+  color:var(--text);font-size:14px;font-weight:600;cursor:pointer;
+  transition:background 0.12s;
+}
+.btn-play:hover{background:var(--surface3)}
+.btn-play.on{background:var(--green-light);border-color:var(--green);color:var(--green)}
+
+/* mic */
+.mic-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
+.mic-btn{
+  width:68px;height:68px;border-radius:50%;
+  border:2px solid var(--border2);background:var(--surface2);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;
+}
+.mic-btn:hover{border-color:var(--green);background:var(--green-light);transform:scale(1.05)}
+.mic-btn.rec{border-color:var(--red);background:var(--red-light);animation:rec-pulse 1s infinite}
+@keyframes rec-pulse{0%,100%{box-shadow:0 0 0 0 rgba(176,48,48,0.3)}50%{box-shadow:0 0 0 10px rgba(176,48,48,0)}}
+.mic-btn svg{width:26px;height:26px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mic-btn.rec svg{stroke:var(--red)}
+.wave{display:flex;align-items:center;gap:3px;height:22px}
+.wbar{width:3px;border-radius:2px;background:var(--red);transition:height 0.08s}
+.mic-lbl{font-size:13px;color:var(--text3);text-align:center}
+
+.interim-box{
+  width:100%;min-height:42px;padding:10px 14px;
+  background:var(--surface2);border-radius:var(--r);
+  border:1px dashed var(--border2);
+  font-size:16px;color:var(--text2);text-align:center;line-height:1.5;
+}
+
+/* choices */
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.choice-btn{
+  padding:15px 10px;border-radius:var(--r-lg);
+  border:1.5px solid var(--border2);background:var(--surface);
+  color:var(--text);font-size:16px;font-weight:600;
+  cursor:pointer;text-align:center;transition:all 0.12s;
+}
+.choice-btn:hover:not(:disabled){border-color:var(--green);background:var(--green-light);transform:translateY(-1px)}
+.choice-btn.ok{border-color:var(--green);background:var(--green-light);color:var(--green)}
+.choice-btn.ng{border-color:var(--red);background:var(--red-light);color:var(--red)}
+.choice-btn:disabled{cursor:not-allowed}
+
+.prompt-box{
+  width:100%;padding:14px 16px;border-radius:var(--r-lg);
+  background:var(--surface2);border:1px solid var(--border2);
+  font-size:15px;color:var(--text);text-align:center;line-height:1.7;
+}
+.prompt-box strong{font-size:18px;display:block;margin-bottom:4px}
+
+/* ========================
+   RESULT SCREEN
+======================== */
+#screen-result{background:var(--bg);align-items:center;justify-content:center;min-height:100vh;}
+#screen-result.active{display:flex!important}
+.result-wrap{
+  max-width:400px;width:100%;margin:24px 16px;
+  background:var(--surface);border-radius:var(--r-xl);
+  border:1px solid var(--border2);box-shadow:var(--shadow-lg);
+  padding:28px 24px;display:flex;flex-direction:column;
+  align-items:center;gap:14px;text-align:center;
+}
+.result-scene{width:100%;height:100px;border-radius:var(--r-lg);overflow:hidden;margin-bottom:2px}
+.result-scene svg{width:100%;height:100%}
+.result-emoji{font-size:56px;line-height:1}
+.result-title{font-size:22px;font-weight:700}
+.result-story{font-size:13px;color:var(--text3);line-height:1.7}
+.result-stars{font-size:26px;letter-spacing:6px;margin:2px 0}
+.score-big{font-size:50px;font-weight:700;color:var(--green);line-height:1}
+.xp-badge{
+  font-size:13px;font-weight:600;padding:5px 16px;border-radius:20px;
+  background:var(--amber-light);color:var(--gold);border:1px solid var(--gold2);
+}
+.result-stats{width:100%;display:flex;flex-direction:column;gap:5px}
+.stat-row{
+  display:flex;justify-content:space-between;font-size:13px;
+  color:var(--text3);padding:5px 0;border-bottom:1px solid var(--border);
+}
+.stat-row span:last-child{font-weight:600;color:var(--text)}
+.btn-lg{
+  width:100%;padding:13px;border-radius:var(--r-xl);border:none;
+  background:var(--green);color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;transition:opacity 0.15s;
+}
+.btn-lg:hover{opacity:0.88}
+.btn-outline{background:none;border:1.5px solid var(--border2);color:var(--text3)}
+.btn-outline:hover{background:var(--surface2);opacity:1}
+
+/* flash */
+.fb-flash{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  z-index:200;pointer-events:none;
+}
+.fb-inner{
+  padding:16px 32px;border-radius:var(--r-xl);
+  font-size:24px;font-weight:700;
+  animation:flash-pop 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:var(--shadow-lg);
+}
+.fb-ok{background:var(--green-light);color:var(--green);border:1.5px solid var(--green)}
+.fb-ng{background:var(--red-light);color:var(--red);border:1.5px solid var(--red)}
+@keyframes flash-pop{from{transform:scale(0.4);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* confetti */
+.cpiece{position:fixed;width:7px;height:7px;border-radius:1px;pointer-events:none;animation:cfall 1.4s ease-in forwards}
+@keyframes cfall{from{transform:translateY(-20px) rotate(0);opacity:1}to{transform:translateY(105vh) rotate(720deg);opacity:0}}
+
+/* ========================
+   BOTTOM NAV
+======================== */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:8px 0 calc(8px + env(safe-area-inset-bottom));
+  z-index:50;box-shadow:0 -2px 12px rgba(26,46,28,0.08);
+}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:4px 20px;cursor:pointer;border-radius:var(--r);
+  transition:background 0.12s;border:none;background:none;color:var(--text3);
+  font-family:inherit;
+}
+.nav-item:hover{background:var(--surface2)}
+.nav-item.active{color:var(--green)}
+.nav-item svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav-item.active svg{stroke:var(--green)}
+.nav-label{font-size:10px;font-weight:600}
+/* ナビ分 padding */
+#screen-map .map-body{padding-bottom:80px}
+#screen-profile{padding-bottom:80px}
+
+/* ========================
+   PROFILE SCREEN
+======================== */
+#screen-profile{background:var(--bg);display:none;min-height:100vh}
+#screen-profile.active{display:block}
+.profile-header{
+  background:var(--green);color:#fff;
+  padding:calc(14px + env(safe-area-inset-top)) 20px 16px;
+}
+.profile-header h2{font-size:18px;font-weight:700}
+.profile-header p{font-size:13px;opacity:0.75;margin-top:2px}
+.profile-body{padding:14px 16px 0;max-width:560px;margin:0 auto}
+
+/* 現在レベルバナー */
+.level-banner{
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  border-radius:var(--r-xl);padding:16px 18px;margin-bottom:14px;
+  color:#fff;display:flex;align-items:center;gap:14px;
+  box-shadow:0 4px 20px rgba(26,107,74,0.25);
+}
+.banner-ava{width:60px;height:68px;flex-shrink:0;display:flex;align-items:flex-end;justify-content:center}
+.banner-info{flex:1;min-width:0}
+.banner-lv{font-size:18px;font-weight:700;margin-bottom:2px}
+.banner-desc{font-size:12px;opacity:0.85;line-height:1.5}
+.banner-pts-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.banner-pts-txt{font-size:11px;opacity:0.75}
+.banner-next-badge{font-size:11px;background:rgba(255,255,255,0.2);border-radius:20px;padding:3px 8px}
+
+/* 1000点バー */
+.score-card{background:var(--surface);border-radius:var(--r-xl);border:1px solid var(--border);padding:18px 16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(26,46,28,0.07)}
+.card-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px}
+.score-hero{display:flex;align-items:flex-end;justify-content:center;gap:6px;margin-bottom:2px}
+.score-big-num{font-size:64px;font-weight:700;line-height:1;color:var(--green)}
+.score-denom{font-size:20px;color:var(--text3);padding-bottom:8px}
+.score-lv-label{text-align:center;font-size:13px;color:var(--text2);margin-bottom:12px}
+.mega-markers{display:flex;justify-content:space-between;margin-bottom:2px}
+.mega-marker{font-size:9px;color:var(--text3)}
+.mega-bar{height:16px;background:var(--surface2);border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.mega-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--green),var(--green2),#b8d040);transition:width 1s cubic-bezier(0.34,1.2,0.64,1)}
+.seg-row{display:flex;gap:1px;height:5px;margin-top:4px;border-radius:3px;overflow:hidden}
+.seg{flex:1;border-radius:1px}
+
+/* アバタートラック */
+.avatar-card{background:var(--surface);border-radius:var(--r-xl);border:1px solid var(--border);padding:18px 16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(26,46,28,0.07)}
+.avatar-scroll{display:flex;gap:0;overflow-x:auto;padding-bottom:8px;-ms-overflow-style:none;scrollbar-width:none}
+.avatar-scroll::-webkit-scrollbar{display:none}
+.avatar-item{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:58px;flex:0 0 58px;cursor:pointer;position:relative;transition:transform 0.12s}
+.avatar-item:hover{transform:translateY(-2px)}
+.avatar-item.locked .ava-fig{filter:grayscale(1) opacity(0.3)}
+.avatar-item.current .ava-fig::after{content:'';position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:32px;height:3px;border-radius:2px;background:var(--gold2)}
+.ava-fig{width:44px;height:52px;display:flex;align-items:flex-end;justify-content:center;position:relative}
+.ava-now{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;color:var(--gold);background:var(--gold-l, #fef8e0);padding:1px 5px;border-radius:8px;border:1px solid var(--gold2);white-space:nowrap}
+.ava-lv{font-size:10px;font-weight:600;color:var(--text2);text-align:center}
+.ava-pts{font-size:8px;color:var(--text3);text-align:center}
+
+/* 標準指標 */
+.std-card{background:var(--surface);border-radius:var(--r-xl);border:1px solid var(--border);padding:18px 16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(26,46,28,0.07)}
+.std-row{padding:8px 10px;border-radius:var(--r);margin-bottom:3px}
+.std-row.current-row{border:1px solid var(--green);background:var(--green-l)}
+.std-row-head{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.std-lv-label{font-size:11px;font-weight:700}
+.std-now-badge{font-size:9px;padding:1px 6px;border-radius:8px;background:var(--green);color:#fff}
+.std-chips{display:flex;gap:5px;flex-wrap:wrap}
+.std-chip{font-size:11px;padding:3px 7px;border-radius:8px}
+
+/* ========================
+   詳細フィードバック
+======================== */
+.fb-detail{
+  width:100%;background:var(--surface2);border-radius:var(--r-lg);
+  border:1px solid var(--border2);padding:14px 16px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.fb-char-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center;justify-content:center}
+.fb-char{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  min-width:36px;padding:6px 4px;border-radius:var(--r);
+  font-size:22px;font-weight:700;transition:transform 0.1s;
+  border:2px solid transparent;
+}
+.fb-char-label{font-size:9px;font-weight:600;letter-spacing:0.04em}
+.fb-char.ok{background:#eaf5ee;border-color:var(--green);color:var(--green)}
+.fb-char.ok .fb-char-label{color:var(--green)}
+.fb-char.ng{background:#fceaea;border-color:var(--red);color:var(--red)}
+.fb-char.ng .fb-char-label{color:var(--red)}
+.fb-char.missing{background:#fef4e0;border-color:var(--amber);color:var(--amber)}
+.fb-char.missing .fb-char-label{color:var(--amber)}
+.fb-char.extra{background:var(--surface3);border-color:var(--border2);color:var(--text3)}
+.fb-char.extra .fb-char-label{color:var(--text3)}
+
+.fb-heard{font-size:13px;color:var(--text2);text-align:center}
+.fb-heard strong{color:var(--text)}
+.fb-advice{
+  font-size:13px;line-height:1.65;
+  padding:10px 12px;border-radius:var(--r);
+  border-left:3px solid;
+}
+.fb-advice.ok{background:#eaf5ee;border-color:var(--green);color:#1a4a2a}
+.fb-advice.ng{background:#fceaea;border-color:var(--red);color:#5a1010}
+.fb-advice.partial{background:#fef4e0;border-color:var(--amber);color:#5a3808}
+
+.fb-actions{display:flex;gap:8px;width:100%}
+.fb-retry{
+  flex:1;padding:11px;border-radius:var(--r-lg);
+  border:1.5px solid var(--border2);background:var(--surface);
+  color:var(--text);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;
+  transition:background 0.12s;
+}
+.fb-retry:hover{background:var(--surface2)}
+.fb-next{
+  flex:2;padding:11px;border-radius:var(--r-lg);
+  border:none;background:var(--green);color:#fff;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:opacity 0.12s;
+}
+.fb-next:hover{opacity:0.88}
+.fb-next.ng-next{background:var(--text2)}
+
+/* interim (録音中) */
+.interim-box{
+  width:100%;min-height:42px;padding:10px 14px;
+  background:var(--surface2);border-radius:var(--r);
+  border:1px dashed var(--border2);
+  font-size:16px;color:var(--text2);text-align:center;line-height:1.5;
+}
+
+/* スコア加算アニメ */
+.score-gain-toast{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--green);color:#fff;
+  font-size:24px;font-weight:700;
+  padding:14px 28px;border-radius:var(--r-xl);
+  box-shadow:0 4px 20px rgba(26,107,74,0.4);
+  z-index:300;pointer-events:none;
+  animation:score-pop 1.8s ease-out forwards;
+}
+@keyframes score-pop{
+  0%{transform:translate(-50%,-50%) scale(0.5);opacity:0}
+  20%{transform:translate(-50%,-50%) scale(1.1);opacity:1}
+  70%{transform:translate(-50%,-50%) scale(1);opacity:1}
+  100%{transform:translate(-50%,-70%) scale(0.9);opacity:0}
+}
+
+/* ========================
+   苦手リスト
+======================== */
+/* マップの苦手練習ボタン */
+.weak-bar{
+  background:var(--surface);border-radius:var(--r-xl);
+  border:1.5px solid #e08050;
+  padding:14px 16px;margin-bottom:14px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 2px 10px rgba(224,128,80,0.15);
+  cursor:pointer;transition:transform 0.12s,box-shadow 0.15s;
+}
+.weak-bar:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(224,128,80,0.22)}
+.weak-bar-icon{font-size:28px;flex-shrink:0}
+.weak-bar-info{flex:1}
+.weak-bar-title{font-size:15px;font-weight:700;color:#c04000}
+.weak-bar-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.weak-bar-count{
+  font-size:22px;font-weight:700;color:#e08050;
+  background:#fef4e0;border-radius:var(--r);
+  padding:4px 10px;
+}
+
+/* 練習画面のブックマークボタン */
+.bookmark-btn{
+  position:absolute;top:14px;right:14px;
+  width:36px;height:36px;border-radius:50%;
+  border:1.5px solid var(--border2);
+  background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;cursor:pointer;
+  transition:all 0.15s;z-index:10;
+}
+.bookmark-btn:hover{border-color:#e08050;background:#fef4e0}
+.bookmark-btn.marked{border-color:#e08050;background:#fef4e0}
+.q-card{position:relative}
+
+/* 苦手リスト画面 */
+#screen-weak{background:var(--bg);display:none;min-height:100vh}
+#screen-weak.active{display:block}
+.weak-header{
+  background:linear-gradient(135deg,#c04000,#e08050);color:#fff;
+  padding:calc(14px + env(safe-area-inset-top)) 20px 16px;
+}
+.weak-header h2{font-size:18px;font-weight:700}
+.weak-header p{font-size:13px;opacity:0.8;margin-top:3px}
+.weak-body{padding:14px 16px 100px;max-width:560px;margin:0 auto}
+
+.weak-section-title{
+  font-size:11px;font-weight:700;color:var(--text3);
+  letter-spacing:0.06em;text-transform:uppercase;
+  margin-bottom:10px;margin-top:4px;
+}
+.weak-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.weak-item{
+  background:var(--surface);border-radius:var(--r-lg);
+  border:1px solid var(--border2);padding:12px 14px;
+  display:flex;align-items:center;gap:12px;
+  transition:background 0.12s;
+}
+.weak-item-word{font-size:20px;font-weight:700;flex:1;color:var(--text)}
+.weak-item-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.weak-item-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.weak-item-count{font-size:12px;font-weight:600;color:#e08050}
+.weak-item-lang{font-size:10px;padding:2px 6px;border-radius:8px;background:var(--surface2);color:var(--text3)}
+.weak-item-del{
+  width:28px;height:28px;border-radius:50%;
+  border:none;background:var(--surface2);color:var(--text3);
+  font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background 0.12s;flex-shrink:0;
+}
+.weak-item-del:hover{background:#fceaea;color:var(--red)}
+
+.weak-empty{
+  text-align:center;padding:40px 20px;color:var(--text3);
+  font-size:14px;line-height:1.7;
+}
+.weak-empty-icon{font-size:48px;margin-bottom:12px}
+
+.weak-start-btn{
+  width:100%;padding:15px;border-radius:var(--r-xl);
+  border:none;background:linear-gradient(135deg,#c04000,#e08050);
+  color:#fff;font-size:16px;font-weight:700;
+  cursor:pointer;font-family:inherit;
+  transition:opacity 0.15s;margin-bottom:10px;
+  box-shadow:0 4px 16px rgba(192,64,0,0.25);
+}
+.weak-start-btn:hover{opacity:0.88}
+.weak-start-btn:disabled{opacity:0.4;cursor:not-allowed}
+.weak-clear-btn{
+  width:100%;padding:10px;border-radius:var(--r-lg);
+  border:1.5px solid var(--border2);background:var(--surface);
+  color:var(--text3);font-size:13px;cursor:pointer;font-family:inherit;
+}
+.weak-clear-btn:hover{background:var(--surface2)}
+
+/* 苦手練習モード：ヘッダー色変更 */
+.prac-header.weak-mode{background:linear-gradient(135deg,#c04000,#e08050)}
+.q-bar-fill.weak-mode{background:linear-gradient(90deg,#c04000,#e08050)}
+
+/* ========================
+   プレイスメントテスト
+======================== */
+#screen-placement{background:linear-gradient(160deg,#1a6b4a 0%,#2a8b5a 50%,#1a5038 100%);min-height:100vh;flex-direction:column;align-items:center;padding:calc(24px + env(safe-area-inset-top)) 20px 40px;}
+#screen-placement.active{display:flex!important}
+.pl-logo{font-size:40px;margin-bottom:6px}
+.pl-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
+.pl-sub{font-size:13px;color:rgba(255,255,255,0.75);margin-bottom:28px;text-align:center}
+
+.pl-cards{width:100%;max-width:480px;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.pl-card{
+  background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.18);
+  border-radius:var(--r-xl);padding:14px 16px;cursor:pointer;
+  display:flex;align-items:center;gap:14px;
+  transition:all 0.15s;color:#fff;
+}
+.pl-card:hover,.pl-card.selected{
+  background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.5);
+  transform:translateY(-1px);
+}
+.pl-card.selected{background:rgba(255,255,255,0.28);border-color:#fff}
+.pl-card-ava{width:44px;height:50px;flex-shrink:0;display:flex;align-items:flex-end;justify-content:center}
+.pl-card-info{flex:1}
+.pl-card-level{font-size:14px;font-weight:700}
+.pl-card-desc{font-size:11px;opacity:0.75;margin-top:2px;line-height:1.4}
+.pl-card-range{font-size:10px;opacity:0.55;margin-top:3px}
+.pl-card-check{font-size:20px;opacity:0;transition:opacity 0.15s}
+.pl-card.selected .pl-card-check{opacity:1}
+
+.pl-divider{
+  display:flex;align-items:center;gap:10px;
+  width:100%;max-width:480px;margin-bottom:16px;
+}
+.pl-divider::before,.pl-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.2)}
+.pl-divider span{font-size:12px;color:rgba(255,255,255,0.5)}
+
+.pl-start-btn{
+  width:100%;max-width:480px;padding:15px;border-radius:var(--r-xl);
+  border:none;background:#fff;color:var(--green);
+  font-size:16px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:opacity 0.15s;
+  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+}
+.pl-start-btn:hover{opacity:0.92}
+.pl-start-btn:disabled{opacity:0.4;cursor:not-allowed;color:var(--text3)}
+.pl-skip{
+  margin-top:12px;font-size:13px;color:rgba(255,255,255,0.55);
+  background:none;border:none;cursor:pointer;font-family:inherit;
+  text-decoration:underline;
+}
+
+/* プレイスメントクイズ内のボタン */
+.pl-choice{
+  width:100%;padding:13px 14px;border-radius:var(--r-lg);
+  border:1.5px solid rgba(255,255,255,0.3);
+  background:rgba(255,255,255,0.1);
+  color:#fff;font-size:16px;font-weight:600;
+  cursor:pointer;text-align:center;font-family:inherit;
+  transition:all 0.12s;
+}
+.pl-choice:hover:not(:disabled){background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.6)}
+.pl-choice.pl-ok{background:rgba(74,222,128,0.25);border-color:#4ade80;color:#fff}
+.pl-choice.pl-ng{background:rgba(248,113,113,0.25);border-color:#f87171;color:#fff}
+.pl-choice:disabled{cursor:not-allowed;opacity:0.75}
+.pl-target-word{font-size:40px;font-weight:700;color:#fff;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,0.2)}
+.pl-target-sub{font-size:14px;color:rgba(255,255,255,0.7);text-align:center}
+.pl-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.pl-play-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:9px 16px;border-radius:var(--r-lg);
+  border:1.5px solid rgba(255,255,255,0.3);
+  background:rgba(255,255,255,0.1);color:#fff;
+  font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+  transition:background 0.12s;
+}
+.pl-play-btn:hover{background:rgba(255,255,255,0.2)}
+
+/* ========================
+   AI弱点分析
+======================== */
+.ai-analysis-card{
+  background:linear-gradient(135deg,#1a2e4a,#2a4060);
+  border-radius:var(--r-xl);border:1px solid rgba(100,160,255,0.3);
+  padding:18px 16px;margin-bottom:14px;
+  box-shadow:0 4px 20px rgba(26,46,74,0.2);
+}
+.ai-card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ai-card-icon{font-size:24px}
+.ai-card-title{font-size:15px;font-weight:700;color:#fff}
+.ai-card-sub{font-size:12px;color:rgba(255,255,255,0.65);margin-top:2px}
+.ai-analyze-btn{
+  width:100%;padding:11px;border-radius:var(--r-lg);
+  border:none;background:linear-gradient(135deg,#4080ff,#60a0ff);
+  color:#fff;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:opacity 0.15s;
+}
+.ai-analyze-btn:hover{opacity:0.88}
+.ai-analyze-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+/* AI分析結果 */
+.ai-result{
+  background:var(--surface);border-radius:var(--r-xl);
+  border:1px solid var(--border2);padding:18px 16px;margin-bottom:14px;
+  box-shadow:var(--sh);
+}
+.ai-result-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.ai-result-title{font-size:14px;font-weight:700;color:var(--text)}
+.ai-loading{display:flex;align-items:center;gap:8px;color:var(--text3);font-size:13px}
+.ai-loading-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:ai-blink 1.2s infinite}
+.ai-loading-dot:nth-child(2){animation-delay:0.2s}
+.ai-loading-dot:nth-child(3){animation-delay:0.4s}
+@keyframes ai-blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}
+.ai-text{font-size:13px;color:var(--text2);line-height:1.75;white-space:pre-wrap}
+.ai-practice-btn{
+  margin-top:12px;width:100%;padding:11px;border-radius:var(--r-lg);
+  border:none;background:linear-gradient(135deg,#4080ff,#60a0ff);
+  color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+}
+
+
+/* ========================
+   会話練習モード
+======================== */
+#screen-conv{background:var(--bg);display:none;min-height:100vh}
+#screen-conv.active{display:block}
+.conv-header{
+  background:linear-gradient(135deg,#2040a0,#4060c0);color:#fff;
+  padding:calc(14px + env(safe-area-inset-top)) 20px 14px;
+}
+.conv-header h2{font-size:17px;font-weight:700}
+.conv-header p{font-size:12px;opacity:0.75;margin-top:3px}
+
+.conv-body{padding:14px 16px 100px;max-width:560px;margin:0 auto}
+
+/* シナリオ選択 */
+.scenario-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.scenario-card{
+  background:var(--surface);border-radius:var(--r-xl);
+  border:1px solid var(--border2);padding:16px;
+  display:flex;align-items:center;gap:14px;cursor:pointer;
+  transition:all 0.14s;box-shadow:var(--sh);
+}
+.scenario-card:hover{transform:translateY(-1px);box-shadow:var(--sh-lg);border-color:var(--blue)}
+.scenario-icon{font-size:32px;flex-shrink:0;width:48px;text-align:center}
+.scenario-info{flex:1}
+.scenario-title{font-size:15px;font-weight:700;color:var(--text)}
+.scenario-desc{font-size:12px;color:var(--text3);margin-top:3px;line-height:1.4}
+.scenario-level{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--surface2);color:var(--text3);margin-top:5px;display:inline-block}
+
+/* 会話画面 */
+.conv-scene{
+  background:var(--surface);border-radius:var(--r-xl);border:1px solid var(--border2);
+  padding:14px 16px;margin-bottom:12px;box-shadow:var(--sh);
+}
+.conv-scene-title{font-size:12px;color:var(--text3);margin-bottom:6px}
+.conv-scene-desc{font-size:14px;color:var(--text2);line-height:1.6}
+
+.chat-area{
+  display:flex;flex-direction:column;gap:10px;
+  margin-bottom:12px;max-height:42vh;overflow-y:auto;
+  padding:4px 0;
+}
+.chat-area::-webkit-scrollbar{display:none}
+
+.chat-bubble{
+  max-width:82%;padding:10px 14px;border-radius:var(--r-xl);
+  font-size:14px;line-height:1.6;position:relative;
+}
+.bubble-ai{
+  background:linear-gradient(135deg,#2040a0,#3050b0);
+  color:#fff;align-self:flex-start;border-bottom-left-radius:4px;
+}
+.bubble-ai .bubble-role{font-size:10px;opacity:0.7;margin-bottom:3px;font-weight:600}
+.bubble-user{
+  background:var(--surface2);color:var(--text);
+  align-self:flex-end;border-bottom-right-radius:4px;
+}
+.bubble-feedback{
+  background:var(--green-l);border:1px solid var(--green-mid);
+  color:var(--text2);align-self:flex-end;border-radius:var(--r);
+  font-size:12px;max-width:90%;
+}
+.bubble-typing{
+  background:linear-gradient(135deg,#2040a0,#3050b0);
+  color:rgba(255,255,255,0.7);align-self:flex-start;
+  border-bottom-left-radius:4px;padding:12px 16px;
+}
+.typing-dots{display:flex;gap:4px;align-items:center}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.7);animation:tdot 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:0.2s}
+.typing-dot:nth-child(3){animation-delay:0.4s}
+@keyframes tdot{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
+
+.conv-input-area{
+  background:var(--surface);border-radius:var(--r-xl);
+  border:1px solid var(--border2);padding:14px 16px;box-shadow:var(--sh);
+}
+.conv-hint{font-size:12px;color:var(--text3);margin-bottom:8px;line-height:1.5}
+.conv-hint strong{color:var(--text2)}
+.conv-mic-row{display:flex;align-items:center;gap:10px}
+.conv-mic-btn{
+  width:56px;height:56px;flex-shrink:0;border-radius:50%;
+  border:2px solid var(--border2);background:var(--surface2);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;font-family:inherit;
+}
+.conv-mic-btn:hover{border-color:#2040a0;background:#e0eaf8;transform:scale(1.05)}
+.conv-mic-btn.rec{border-color:#b83030;background:var(--red-light);animation:rec-pulse 1s infinite}
+.conv-mic-btn svg{width:22px;height:22px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round}
+.conv-mic-btn.rec svg{stroke:var(--red)}
+.conv-interim{flex:1;font-size:14px;color:var(--text2);min-height:22px}
+.conv-tts-btn{
+  padding:8px 14px;border-radius:var(--r);
+  border:1px solid var(--border2);background:var(--surface);
+  color:var(--text2);font-size:12px;cursor:pointer;font-family:inherit;
+  white-space:nowrap;
+}
+.conv-tts-btn:hover{background:var(--surface2)}
+
+.conv-end-btn{
+  width:100%;margin-top:10px;padding:10px;border-radius:var(--r-lg);
+  border:1px solid var(--border2);background:var(--surface);
+  color:var(--text3);font-size:13px;cursor:pointer;font-family:inherit;
+}
+
+/* 音声ガイドのアイコン */
+.voice-guide-btn{
+  position:fixed;bottom:80px;right:16px;
+  width:44px;height:44px;border-radius:50%;
+  background:var(--green);color:#fff;
+  border:none;cursor:pointer;font-size:20px;
+  box-shadow:0 2px 12px rgba(26,107,74,0.3);
+  display:none;align-items:center;justify-content:center;
+  z-index:40;transition:transform 0.15s;
+}
+.voice-guide-btn.show{display:flex}
+.voice-guide-btn:hover{transform:scale(1.08)}
+/* responsive */
+@media(max-width:390px){
+  .target-main{font-size:36px}
+  .choice-btn{font-size:14px;padding:12px 8px}
+}
+@media(min-width:768px){
+  .target-main{font-size:58px}
+  .choice-btn{font-size:18px;padding:18px 12px}
+  .q-card{padding:28px 24px}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== PLACEMENT TEST ========== -->
+<div id="screen-placement" class="screen">
+
+  <!-- フェーズ1: 自己申告 -->
+  <div id="pl-phase1" style="width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center">
+    <div class="pl-logo">🌱</div>
+    <div class="pl-title" id="pl-title">今のレベルを教えてください</div>
+    <div class="pl-sub" id="pl-sub">一番近いものを選ぶと、適切なところから始められます</div>
+    <div class="pl-cards" id="pl-cards"></div>
+    <div class="pl-divider"><span id="pl-or-label">または</span></div>
+    <button class="pl-start-btn" id="pl-start-btn" onclick="startPlacementQuiz()"> AIと会話テストを始める →
+    </button>
+    <button class="pl-skip" onclick="skipPlacement()" id="pl-skip-btn">
+      最初から始める（Lv.1）
+    </button>
+  </div>
+
+  <!-- フェーズ2: クイズ確認 -->
+  <div id="pl-phase2" style="width:100%;max-width:480px;display:none;flex-direction:column;align-items:center">
+    <div class="pl-logo" id="pl-quiz-emoji">🎯</div>
+    <div class="pl-title" id="pl-quiz-title">確認テスト</div>
+    <div class="pl-sub" id="pl-quiz-sub">5問で実際のレベルを確認します</div>
+
+    <!-- 進捗バー -->
+    <div style="width:100%;background:rgba(255,255,255,0.2);border-radius:4px;height:5px;margin-bottom:20px">
+      <div id="pl-quiz-bar" style="height:100%;background:#fff;border-radius:4px;transition:width 0.4s;width:0%"></div>
+    </div>
+
+    <!-- 問題カード -->
+    <div id="pl-quiz-card" style="width:100%;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.25);border-radius:var(--r-xl);padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:14px"></div>
+  </div>
+
+  <!-- フェーズ3: 結果 -->
+  <div id="pl-phase3" style="width:100%;max-width:480px;display:none;flex-direction:column;align-items:center;gap:14px">
+    <div class="pl-logo" id="pl-result-emoji">🎉</div>
+    <div class="pl-title" id="pl-result-title">テスト完了！</div>
+    <div style="background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.3);border-radius:var(--r-xl);padding:20px 18px;width:100%;text-align:center">
+      <div id="pl-result-ava" style="display:flex;justify-content:center;margin-bottom:10px"></div>
+      <div style="font-size:20px;font-weight:700;color:#fff" id="pl-result-level"></div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-top:6px;line-height:1.6" id="pl-result-desc"></div>
+      <div style="display:flex;justify-content:center;gap:16px;margin-top:14px">
+        <div style="text-align:center">
+          <div style="font-size:28px;font-weight:700;color:#fff" id="pl-result-score"></div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.6)" id="pl-result-score-lbl">正答率</div>
+        </div>
+        <div style="width:1px;background:rgba(255,255,255,0.2)"></div>
+        <div style="text-align:center">
+          <div style="font-size:28px;font-weight:700;color:#fff" id="pl-result-recommended"></div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.6)" id="pl-result-rec-lbl">推奨レベル</div>
+        </div>
+      </div>
+    </div>
+    <button class="pl-start-btn" id="pl-result-btn" onclick="applyPlacementResult()"></button>
+    <button class="pl-skip" onclick="skipPlacement()" id="pl-result-skip"></button>
+  </div>
+
+</div>
+
+<!-- ========== LANGUAGE SELECT ========== -->
+<div id="screen-lang" class="screen">
+  <div class="lang-logo">🌏</div>
+  <div class="lang-app-name">Kotoba Learn</div>
+  <div class="lang-tagline" id="lang-tagline">言語を選んで旅を始めよう</div>
+
+  <div class="lang-section-label" id="label-ui-lang">表示言語 / Interface Language</div>
+  <div class="lang-grid" style="margin-bottom:16px">
+    <div class="lang-card selected" id="ui-ja" onclick="setUI('ja')">
+      <div class="lang-flag">🇯🇵</div>
+      <div class="lang-name">日本語</div>
+      <div class="lang-native">Japanese</div>
+    </div>
+    <div class="lang-card" id="ui-en" onclick="setUI('en')">
+      <div class="lang-flag">🇺🇸</div>
+      <div class="lang-name">English</div>
+      <div class="lang-native">英語</div>
+    </div>
+  </div>
+
+  <div class="lang-divider"><span id="label-divider">学習する言語</span></div>
+
+  <div class="lang-section-label" id="label-learn-lang" style="margin-top:12px">練習する言語 / Language to Learn</div>
+  <div class="lang-grid">
+    <div class="lang-card" id="learn-ja" onclick="setLearn('ja')">
+      <div class="lang-flag">🇯🇵</div>
+      <div class="lang-name">日本語</div>
+      <div class="lang-native">Japanese</div>
+    </div>
+    <div class="lang-card selected" id="learn-en" onclick="setLearn('en')">
+      <div class="lang-flag">🇺🇸</div>
+      <div class="lang-name">English</div>
+      <div class="lang-native">英語</div>
+    </div>
+  </div>
+
+  <div style="height:20px"></div>
+  <button class="lang-start-btn" id="lang-start-btn" onclick="startApp()">
+    旅を始める → Start
+  </button>
+</div>
+
+<!-- ========== MAP ========== -->
+<div id="screen-map" class="screen">
+  <div class="map-header">
+    <div class="map-header-top">
+      <div class="app-logo">
+        <span class="app-logo-icon">🌏</span>
+        <span class="app-logo-text" id="map-app-title">Kotoba Learn</span>
+      </div>
+      <div class="header-actions">
+        <button class="lang-switch-btn" onclick="showPlacementFromMap()" id="pl-change-btn" style="margin-right:4px">📊 レベル変更</button>
+        <button class="lang-switch-btn" onclick="showLangSelect()" id="lang-switch-label">🔄 言語変更</button>
+      </div>
+    </div>
+    <div class="xp-row">
+      <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+      <span class="xp-txt" id="xp-txt">0 XP</span>
+    </div>
+    <div class="streak-row"><span class="streak-chip" id="streak-chip">🌱 学習を始めよう</span></div>
+  </div>
+  <div class="map-body" id="map-body"></div>
+</div>
+
+<!-- ========== PRACTICE ========== -->
+<div id="screen-practice" class="screen">
+  <div class="prac-header">
+    <button class="back-btn" onclick="goMap()">← <span id="btn-back-label">地図</span></button>
+    <div class="prac-title">
+      <div class="prac-title-main" id="p-title"></div>
+      <div class="prac-title-sub" id="p-sub"></div>
+    </div>
+    <div class="hearts" id="hearts"></div>
+  </div>
+  <div class="q-progress-wrap">
+    <div class="q-bar"><div class="q-bar-fill" id="q-fill" style="width:0%"></div></div>
+    <div class="q-info"><span id="q-label">Q1</span><span id="q-score">✓ 0</span></div>
+  </div>
+  <div class="prac-body">
+    <div class="alert-box" id="alert-box"></div>
+    <div class="q-card" id="q-card"></div>
+  </div>
+</div>
+
+<!-- ========== RESULT ========== -->
+<div id="screen-result" class="screen">
+  <div class="result-wrap">
+    <div class="result-scene" id="r-scene"></div>
+    <div class="result-emoji" id="r-emoji"></div>
+    <div class="result-title" id="r-title"></div>
+    <div class="result-story" id="r-story"></div>
+    <div class="result-stars" id="r-stars"></div>
+    <div class="score-big" id="r-score"></div>
+    <div class="xp-badge" id="r-xp"></div>
+    <div class="result-stats" id="r-stats"></div>
+    <button class="btn-lg" id="r-btn1" onclick="resultNext()"></button>
+    <button class="btn-lg btn-outline" onclick="goMap()" id="r-btn-map"></button>
+  </div>
+</div>
+
+<!-- ========== PROFILE SCREEN ========== -->
+<div id="screen-profile" class="screen">
+  <div class="profile-header">
+    <h2 id="prof-title">📊 マイレベル</h2>
+    <p id="prof-sub">学習の記録と成長を確認しよう</p>
+  </div>
+  <div class="profile-body">
+    <div class="level-banner" id="prof-banner">
+      <div class="banner-ava" id="prof-ava"></div>
+      <div class="banner-info">
+        <div class="banner-lv" id="prof-lv-name"></div>
+        <div class="banner-desc" id="prof-lv-desc"></div>
+        <div class="banner-pts-row">
+          <span class="banner-pts-txt" id="prof-pts-txt"></span>
+          <span class="banner-next-badge" id="prof-next-badge"></span>
+        </div>
+      </div>
+    </div>
+    <div class="score-card">
+      <div class="card-title" id="prof-score-title">総合スコア</div>
+      <div class="score-hero">
+        <div class="score-big-num" id="prof-score-num">0</div>
+        <div class="score-denom">/ 1000</div>
+      </div>
+      <div class="score-lv-label" id="prof-score-label"></div>
+      <div class="mega-markers" id="prof-markers"></div>
+      <div class="mega-bar"><div class="mega-fill" id="prof-mega-fill" style="width:0%"></div></div>
+      <div class="seg-row" id="prof-segs"></div>
+      <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:4px" id="prof-seg-note">各色 = 1レベル（100点区間）</div>
+    </div>
+    <div class="avatar-card">
+      <div class="card-title" id="prof-ava-title">言語発達レベル — 今どの段階？</div>
+      <div class="avatar-scroll" id="prof-ava-track"></div>
+    </div>
+    <div class="std-card">
+      <div class="card-title" id="prof-std-title">標準指標との対応</div>
+      <div id="prof-std-list"></div>
+    </div>
+
+    <!-- AI弱点分析カード -->
+    <div class="ai-analysis-card" id="ai-analysis-card">
+      <div class="ai-card-header">
+        <span class="ai-card-icon">🤖</span>
+        <div>
+          <div class="ai-card-title" id="ai-card-title">AI弱点分析</div>
+          <div class="ai-card-sub" id="ai-card-sub">練習履歴をAIが分析して弱点と対策を提案します</div>
+        </div>
+      </div>
+      <button class="ai-analyze-btn" id="ai-analyze-btn" onclick="runAIAnalysis()">
+        🔍 弱点を分析する
+      </button>
+    </div>
+
+    <!-- AI分析結果 -->
+    <div class="ai-result" id="ai-result" style="display:none">
+      <div class="ai-result-header">
+        <span style="font-size:18px">🤖</span>
+        <span class="ai-result-title" id="ai-result-title">AI分析レポート</span>
+      </div>
+      <div id="ai-result-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== WEAK LIST SCREEN ========== -->
+<div id="screen-weak" class="screen">
+  <div class="weak-header">
+    <h2 id="weak-header-title">🔖 苦手リスト</h2>
+    <p id="weak-header-sub">間違えた単語・ブックマークした単語を練習しよう</p>
+  </div>
+  <div class="weak-body">
+    <div class="weak-section-title" id="weak-sec-title">練習する単語</div>
+    <div class="weak-list" id="weak-list"></div>
+    <div class="weak-empty" id="weak-empty" style="display:none">
+      <div class="weak-empty-icon">📭</div>
+      <div id="weak-empty-txt">まだ苦手リストに単語がありません。<br>練習中に間違えた単語や<br>🔖ボタンで追加できます。</div>
+    </div>
+    <button class="weak-start-btn" id="weak-start-btn" onclick="startWeakPractice()"></button>
+    <button class="weak-clear-btn" id="weak-clear-btn" onclick="clearWeakList()"></button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+
+<!-- ========== CONVERSATION SCREEN ========== -->
+<div id="screen-conv" class="screen">
+  <div class="conv-header">
+    <h2 id="conv-header-title">💬 会話練習</h2>
+    <p id="conv-header-sub">AIと実際に会話して練習しよう</p>
+  </div>
+  <div class="conv-body" id="conv-body">
+    <!-- シナリオ選択 or 会話画面が動的に入る -->
+  </div>
+</div>
+
+<!-- 音声ガイドボタン（マップ・練習画面に表示） -->
+<button class="voice-guide-btn" id="voice-guide-btn" onclick="readScreenAloud()" title="画面を読み上げる">
+  🔊
+</button>
+<nav class="bottom-nav" id="bottom-nav" style="display:none">
+  <button class="nav-item active" id="nav-map" onclick="navTo('map')">
+    <svg viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13V7m0 13l6-3M9 7l6-3m0 17l4.553 2.276A1 1 0 0021 19.382V8.618a1 1 0 00-.553-.894L15 5m0 16V5"/></svg>
+    <span class="nav-label" id="nav-label-map">地図</span>
+  </button>
+  <button class="nav-item" id="nav-conv" onclick="navTo('conv')">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <span class="nav-label" id="nav-label-conv">会話</span>
+  </button>
+  <button class="nav-item" id="nav-weak" onclick="navTo('weak')">
+    <svg viewBox="0 0 24 24"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+    <span class="nav-label" id="nav-label-weak">苦手</span>
+  </button>
+  <button class="nav-item" id="nav-profile" onclick="navTo('profile')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    <span class="nav-label" id="nav-label-profile">レベル</span>
+  </button>
+</nav>
+
+<div class="fb-flash" id="fb-flash" style="display:none">
+  <div class="fb-inner" id="fb-inner"></div>
+</div>
+
+<script>
+// ========================
+// LANGUAGE PACKS
+// ========================
+const PACKS = {
+  ja: {
+    // 学習言語: 日本語
+    ttsLang: 'ja-JP',
+    sttLang: 'ja-JP',
+    chapters: [
+      {
+        id:1, name:'第一章　あいさつ',
+        desc:'旅の始まり。基本的な挨拶を覚えよう。',
+        scene:'greeting',
+        unlockXP:0,
+        story_pass:'挨拶ができるようになった。日本語の旅が始まる。',
+        story_fail:'もう一度練習しよう。焦らなくていい。',
+        levels:[
+          {id:1, name:'はじめまして', type:'speak', passRate:0.8,
+           desc:'挨拶の言葉',
+           items:[
+            {w:'おはよう',d:'おはよう',sub:'Good morning'},
+            {w:'こんにちは',d:'こんにちは',sub:'Hello'},
+            {w:'こんばんは',d:'こんばんは',sub:'Good evening'},
+            {w:'ありがとう',d:'ありがとう',sub:'Thank you'},
+            {w:'すみません',d:'すみません',sub:'Excuse me'},
+            {w:'はい',d:'はい',sub:'Yes'},
+            {w:'いいえ',d:'いいえ',sub:'No'},
+            {w:'わかりました',d:'わかりました',sub:'I understand'},
+            {w:'おねがいします',d:'おねがいします',sub:'Please'},
+            {w:'さようなら',d:'さようなら',sub:'Goodbye'},
+           ]},
+          {id:2, name:'自己紹介', type:'speak', passRate:0.8,
+           desc:'名前や出身を言ってみよう',
+           items:[
+            {w:'わたしは',d:'わたしは',sub:'I am / As for me'},
+            {w:'なまえ',d:'なまえ',sub:'Name'},
+            {w:'どこから',d:'どこから',sub:'From where'},
+            {w:'にほん',d:'にほん',sub:'Japan'},
+            {w:'がくせい',d:'がくせい',sub:'Student'},
+            {w:'はじめまして',d:'はじめまして',sub:'Nice to meet you'},
+            {w:'よろしく',d:'よろしく',sub:'Nice to meet you'},
+            {w:'おなまえは',d:'おなまえは',sub:"What's your name?"},
+            {w:'なんさいですか',d:'なんさいですか',sub:'How old are you?'},
+            {w:'どうぞ',d:'どうぞ',sub:'Please / Here you go'},
+           ]},
+        ]
+      },
+      {
+        id:2, name:'第二章　数字と時間',
+        desc:'数字を覚えて、時間を聞いたり答えたりしよう。',
+        scene:'numbers',
+        unlockXP:100,
+        story_pass:'時間を聞けるようになった！お店でも使える。',
+        story_fail:'数字は大切。もう一度丁寧に練習しよう。',
+        levels:[
+          {id:3, name:'数字', type:'speak', passRate:0.8,
+           desc:'一から十まで',
+           items:[
+            {w:'いち',d:'一（いち）',sub:'1'},
+            {w:'に',d:'二（に）',sub:'2'},
+            {w:'さん',d:'三（さん）',sub:'3'},
+            {w:'し',d:'四（し）',sub:'4'},
+            {w:'ご',d:'五（ご）',sub:'5'},
+            {w:'ろく',d:'六（ろく）',sub:'6'},
+            {w:'なな',d:'七（なな）',sub:'7'},
+            {w:'はち',d:'八（はち）',sub:'8'},
+            {w:'きゅう',d:'九（きゅう）',sub:'9'},
+            {w:'じゅう',d:'十（じゅう）',sub:'10'},
+           ]},
+          {id:4, name:'選んでみよう', type:'point', passRate:0.8,
+           desc:'聞こえた言葉を選ぼう',
+           items:[
+            {target:'おはよう',prompt:'おはよう',choices:['おはよう','こんにちは','こんばんは','さようなら']},
+            {target:'ありがとう',prompt:'ありがとう',choices:['すみません','ありがとう','はい','いいえ']},
+            {target:'さん',prompt:'さん',choices:['いち','に','さん','し']},
+            {target:'ご',prompt:'ご',choices:['ご','ろく','なな','はち']},
+            {target:'じゅう',prompt:'じゅう',choices:['きゅう','じゅう','はち','なな']},
+            {target:'こんにちは',prompt:'こんにちは',choices:['おはよう','こんにちは','こんばんは','さようなら']},
+            {target:'わかりました',prompt:'わかりました',choices:['わかりました','おねがいします','すみません','はい']},
+            {target:'に',prompt:'に',choices:['いち','に','さん','し']},
+            {target:'はち',prompt:'はち',choices:['ろく','なな','はち','きゅう']},
+            {target:'どうぞ',prompt:'どうぞ',choices:['どうぞ','ありがとう','すみません','はい']},
+           ]},
+        ]
+      },
+      {
+        id:3, name:'第三章　お店で',
+        desc:'お店で注文したり、値段を聞いたりしよう。',
+        scene:'shop',
+        unlockXP:300,
+        story_pass:'お店で買い物ができた！日本語が使えた。',
+        story_fail:'お店の言葉を練習しよう。また挑戦しよう。',
+        levels:[
+          {id:5, name:'お店の言葉', type:'speak_pic', passRate:0.8,
+           desc:'食べ物や物の名前を覚えよう',
+           items:[
+            {w:'みず',d:'みず',sub:'Water',ic:'water'},
+            {w:'おちゃ',d:'おちゃ',sub:'Tea',ic:'tea'},
+            {w:'ごはん',d:'ごはん',sub:'Rice / Meal',ic:'rice'},
+            {w:'パン',d:'パン',sub:'Bread',ic:'bread'},
+            {w:'コーヒー',d:'コーヒー',sub:'Coffee',ic:'coffee'},
+            {w:'りんご',d:'りんご',sub:'Apple',ic:'apple'},
+            {w:'さかな',d:'さかな',sub:'Fish',ic:'fish'},
+            {w:'てんぷら',d:'てんぷら',sub:'Tempura',ic:'tempura'},
+            {w:'すし',d:'すし',sub:'Sushi',ic:'sushi'},
+            {w:'ラーメン',d:'ラーメン',sub:'Ramen',ic:'ramen'},
+           ]},
+          {id:6, name:'注文する', type:'speak', passRate:0.75,
+           desc:'お店で使うフレーズ',
+           items:[
+            {w:'これをください',d:'これをください',sub:'This one please'},
+            {w:'いくらですか',d:'いくらですか',sub:'How much is it?'},
+            {w:'ひとつ',d:'ひとつ',sub:'One (piece)'},
+            {w:'ふたつ',d:'ふたつ',sub:'Two (pieces)'},
+            {w:'おすすめは',d:'おすすめは',sub:'What do you recommend?'},
+            {w:'おいしい',d:'おいしい',sub:'Delicious'},
+            {w:'からい',d:'からい',sub:'Spicy'},
+            {w:'アレルギーがあります',d:'アレルギーがあります',sub:'I have an allergy'},
+            {w:'おかんじょうを',d:'おかんじょうを',sub:'The check please'},
+            {w:'ありがとうございました',d:'ありがとうございました',sub:'Thank you very much'},
+           ]},
+        ]
+      },
+      {
+        id:4, name:'第四章　道案内',
+        desc:'道を聞いたり、場所を伝えたりしよう。',
+        scene:'street',
+        unlockXP:600,
+        story_pass:'道案内ができるようになった。どこでも行ける！',
+        story_fail:'方向の言葉を練習しよう。もう一度。',
+        levels:[
+          {id:7, name:'場所と方向', type:'speak', passRate:0.75,
+           desc:'場所を表す言葉',
+           items:[
+            {w:'えき',d:'えき',sub:'Station'},
+            {w:'ホテル',d:'ホテル',sub:'Hotel'},
+            {w:'びょういん',d:'びょういん',sub:'Hospital'},
+            {w:'ぎんこう',d:'ぎんこう',sub:'Bank'},
+            {w:'トイレ',d:'トイレ',sub:'Restroom'},
+            {w:'みぎ',d:'みぎ',sub:'Right'},
+            {w:'ひだり',d:'ひだり',sub:'Left'},
+            {w:'まっすぐ',d:'まっすぐ',sub:'Straight ahead'},
+            {w:'ちかい',d:'ちかい',sub:'Near'},
+            {w:'とおい',d:'とおい',sub:'Far'},
+           ]},
+          {id:8, name:'道を聞く', type:'speak', passRate:0.75,
+           desc:'道案内のフレーズ',
+           items:[
+            {w:'えきはどこですか',d:'えきはどこですか',sub:'Where is the station?'},
+            {w:'ここはどこですか',d:'ここはどこですか',sub:'Where am I?'},
+            {w:'みぎにまがってください',d:'みぎにまがってください',sub:'Please turn right'},
+            {w:'ちかいですか',d:'ちかいですか',sub:'Is it near?'},
+            {w:'あるいていけますか',d:'あるいていけますか',sub:'Can I walk there?'},
+            {w:'バスていはどこ',d:'バスていはどこ',sub:'Where is the bus stop?'},
+            {w:'まっすぐいってください',d:'まっすぐいってください',sub:'Go straight'},
+            {w:'この地図を見せてください',d:'このちずをみせてください',sub:'Show me this map'},
+            {w:'ここから遠いですか',d:'ここからとおいですか',sub:'Is it far from here?'},
+            {w:'タクシーを呼んでください',d:'タクシーをよんでください',sub:'Please call a taxi'},
+           ]},
+        ]
+      },
+      {
+        id:5, name:'第五章　日常会話',
+        desc:'天気・気持ち・体調など、日常の会話に挑戦しよう。',
+        scene:'daily',
+        unlockXP:1000,
+        story_pass:'日常会話ができるようになった。もっと話せる！',
+        story_fail:'もう少し練習してから再挑戦しよう。',
+        levels:[
+          {id:9, name:'気持ちと体調', type:'speak', passRate:0.75,
+           desc:'気持ちや体調を伝える',
+           items:[
+            {w:'げんきです',d:'げんきです',sub:"I'm fine"},
+            {w:'つかれました',d:'つかれました',sub:'I am tired'},
+            {w:'いたいです',d:'いたいです',sub:'It hurts'},
+            {w:'さむいです',d:'さむいです',sub:"I'm cold"},
+            {w:'あついです',d:'あついです',sub:"I'm hot"},
+            {w:'うれしい',d:'うれしい',sub:'Happy'},
+            {w:'かなしい',d:'かなしい',sub:'Sad'},
+            {w:'たのしい',d:'たのしい',sub:'Fun'},
+            {w:'びっくりした',d:'びっくりした',sub:'Surprised'},
+            {w:'だいじょうぶ',d:'だいじょうぶ',sub:"I'm okay"},
+           ]},
+          {id:10, name:'会話に挑戦', type:'speak', passRate:0.7,
+           desc:'実際の会話フレーズ',
+           items:[
+            {w:'いっしょにいきましょう',d:'いっしょにいきましょう',sub:"Let's go together"},
+            {w:'もう一度いってください',d:'もういちどいってください',sub:'Please say it again'},
+            {w:'ゆっくりはなしてください',d:'ゆっくりはなしてください',sub:'Please speak slowly'},
+            {w:'にほんごがすこしわかります',d:'にほんごがすこしわかります',sub:'I understand a little Japanese'},
+            {w:'えいごをはなせますか',d:'えいごをはなせますか',sub:'Do you speak English?'},
+            {w:'てつだってください',d:'てつだってください',sub:'Please help me'},
+            {w:'しゃしんをとってもいいですか',d:'しゃしんをとってもいいですか',sub:'May I take a photo?'},
+            {w:'どのくらいかかりますか',d:'どのくらいかかりますか',sub:'How long does it take?'},
+            {w:'よやくをしたいです',d:'よやくをしたいです',sub:'I want to make a reservation'},
+            {w:'まよってしまいました',d:'まよってしまいました',sub:'I am lost'},
+           ]},
+        ]
+      },
+    ]
+  },
+
+  en: {
+    // 学習言語: 英語
+    ttsLang: 'en-US',
+    sttLang: 'en-US',
+    chapters: [
+      {
+        id:1, name:'Chapter 1: Greetings',
+        desc:'Start your journey. Learn basic greetings.',
+        scene:'greeting',
+        unlockXP:0,
+        story_pass:"You can now greet people in English! The journey begins.",
+        story_fail:"Let's practice a bit more. Take your time.",
+        levels:[
+          {id:1, name:'Hello!', type:'speak', passRate:0.8,
+           desc:'Basic greetings',
+           items:[
+            {w:'Hello',d:'Hello',sub:'こんにちは'},
+            {w:'Good morning',d:'Good morning',sub:'おはようございます'},
+            {w:'Good evening',d:'Good evening',sub:'こんばんは'},
+            {w:'Thank you',d:'Thank you',sub:'ありがとう'},
+            {w:'Excuse me',d:'Excuse me',sub:'すみません'},
+            {w:'Yes',d:'Yes',sub:'はい'},
+            {w:'No',d:'No',sub:'いいえ'},
+            {w:'Please',d:'Please',sub:'お願いします'},
+            {w:'Sorry',d:'Sorry',sub:'ごめんなさい'},
+            {w:'Goodbye',d:'Goodbye',sub:'さようなら'},
+           ]},
+          {id:2, name:'Nice to meet you', type:'speak', passRate:0.8,
+           desc:'Introduce yourself',
+           items:[
+            {w:'My name is',d:'My name is',sub:'私の名前は'},
+            {w:'I am from Japan',d:'I am from Japan',sub:'日本から来ました'},
+            {w:'Nice to meet you',d:'Nice to meet you',sub:'はじめまして'},
+            {w:'How are you',d:'How are you',sub:'お元気ですか'},
+            {w:"I'm fine",d:"I'm fine",sub:'元気です'},
+            {w:'What is your name',d:'What is your name',sub:'お名前は？'},
+            {w:'I am a student',d:'I am a student',sub:'学生です'},
+            {w:'Where are you from',d:'Where are you from',sub:'どこから来ましたか'},
+            {w:'I am happy to meet you',d:'I am happy to meet you',sub:'お会いできて嬉しいです'},
+            {w:'See you later',d:'See you later',sub:'またあとで'},
+           ]},
+        ]
+      },
+      {
+        id:2, name:'Chapter 2: Numbers & Time',
+        desc:'Learn numbers and tell the time.',
+        scene:'numbers',
+        unlockXP:100,
+        story_pass:'You can count and tell time! Very useful.',
+        story_fail:'Numbers take practice. Try again.',
+        levels:[
+          {id:3, name:'Numbers', type:'speak', passRate:0.8,
+           desc:'One to ten',
+           items:[
+            {w:'one',d:'one',sub:'いち・1'},
+            {w:'two',d:'two',sub:'に・2'},
+            {w:'three',d:'three',sub:'さん・3'},
+            {w:'four',d:'four',sub:'し・4'},
+            {w:'five',d:'five',sub:'ご・5'},
+            {w:'six',d:'six',sub:'ろく・6'},
+            {w:'seven',d:'seven',sub:'なな・7'},
+            {w:'eight',d:'eight',sub:'はち・8'},
+            {w:'nine',d:'nine',sub:'きゅう・9'},
+            {w:'ten',d:'ten',sub:'じゅう・10'},
+           ]},
+          {id:4, name:'Choose the word', type:'point', passRate:0.8,
+           desc:'Listen and choose',
+           items:[
+            {target:'Hello',prompt:'Hello',choices:['Hello','Goodbye','Thank you','Sorry']},
+            {target:'Thank you',prompt:'Thank you',choices:['Excuse me','Thank you','Yes','No']},
+            {target:'three',prompt:'three',choices:['one','two','three','four']},
+            {target:'five',prompt:'five',choices:['five','six','seven','eight']},
+            {target:'ten',prompt:'ten',choices:['nine','ten','eight','seven']},
+            {target:'Good morning',prompt:'Good morning',choices:['Hello','Good morning','Good evening','Goodbye']},
+            {target:'Please',prompt:'Please',choices:['Please','Sorry','Yes','No']},
+            {target:'two',prompt:'two',choices:['one','two','three','four']},
+            {target:'eight',prompt:'eight',choices:['six','seven','eight','nine']},
+            {target:'See you later',prompt:'See you later',choices:['See you later','Thank you','Goodbye','Hello']},
+           ]},
+        ]
+      },
+      {
+        id:3, name:'Chapter 3: At the Café',
+        desc:'Order food and drinks. Practice useful phrases.',
+        scene:'shop',
+        unlockXP:300,
+        story_pass:"You ordered successfully! Enjoy your meal.",
+        story_fail:'Practice ordering. Try again soon.',
+        levels:[
+          {id:5, name:'Food & Drinks', type:'speak_pic', passRate:0.8,
+           desc:'Names of food and drinks',
+           items:[
+            {w:'water',d:'water',sub:'みず',ic:'water'},
+            {w:'coffee',d:'coffee',sub:'コーヒー',ic:'coffee'},
+            {w:'tea',d:'tea',sub:'おちゃ',ic:'tea'},
+            {w:'bread',d:'bread',sub:'パン',ic:'bread'},
+            {w:'rice',d:'rice',sub:'ごはん',ic:'rice'},
+            {w:'apple',d:'apple',sub:'りんご',ic:'apple'},
+            {w:'fish',d:'fish',sub:'さかな',ic:'fish'},
+            {w:'cake',d:'cake',sub:'ケーキ',ic:'cake'},
+            {w:'soup',d:'soup',sub:'スープ',ic:'soup'},
+            {w:'menu',d:'menu',sub:'メニュー',ic:'menu'},
+           ]},
+          {id:6, name:'Ordering', type:'speak', passRate:0.75,
+           desc:'Phrases for ordering',
+           items:[
+            {w:'I would like this',d:'I would like this',sub:'これをください'},
+            {w:'How much is it',d:'How much is it',sub:'いくらですか'},
+            {w:'One please',d:'One please',sub:'ひとつください'},
+            {w:'Do you have a menu',d:'Do you have a menu',sub:'メニューはありますか'},
+            {w:'This is delicious',d:'This is delicious',sub:'おいしいです'},
+            {w:'I am allergic to',d:'I am allergic to',sub:'〜アレルギーがあります'},
+            {w:'The check please',d:'The check please',sub:'お会計をお願いします'},
+            {w:'What do you recommend',d:'What do you recommend',sub:'おすすめは何ですか'},
+            {w:'Can I have water',d:'Can I have water',sub:'お水をいただけますか'},
+            {w:'Thank you for the meal',d:'Thank you for the meal',sub:'ごちそうさまでした'},
+           ]},
+        ]
+      },
+      {
+        id:4, name:'Chapter 4: Getting Around',
+        desc:'Ask for directions and navigate.',
+        scene:'street',
+        unlockXP:600,
+        story_pass:"You can get around! The city is yours.",
+        story_fail:'Direction words need more practice.',
+        levels:[
+          {id:7, name:'Places & Directions', type:'speak', passRate:0.75,
+           desc:'Location vocabulary',
+           items:[
+            {w:'station',d:'station',sub:'えき'},
+            {w:'hotel',d:'hotel',sub:'ホテル'},
+            {w:'hospital',d:'hospital',sub:'びょういん'},
+            {w:'bank',d:'bank',sub:'ぎんこう'},
+            {w:'restroom',d:'restroom',sub:'トイレ'},
+            {w:'right',d:'right',sub:'みぎ'},
+            {w:'left',d:'left',sub:'ひだり'},
+            {w:'straight',d:'straight ahead',sub:'まっすぐ'},
+            {w:'near',d:'near',sub:'ちかい'},
+            {w:'far',d:'far',sub:'とおい'},
+           ]},
+          {id:8, name:'Asking Directions', type:'speak', passRate:0.75,
+           desc:'Useful direction phrases',
+           items:[
+            {w:'Where is the station',d:'Where is the station',sub:'えきはどこですか'},
+            {w:'How do I get to the hotel',d:'How do I get to the hotel',sub:'ホテルへの行き方は'},
+            {w:'Please turn right',d:'Please turn right',sub:'みぎにまがってください'},
+            {w:'Is it far from here',d:'Is it far from here',sub:'ここから遠いですか'},
+            {w:'Can I walk there',d:'Can I walk there',sub:'歩いていけますか'},
+            {w:'I am lost',d:'I am lost',sub:'道に迷いました'},
+            {w:'Please help me',d:'Please help me',sub:'助けてください'},
+            {w:'Show me on the map',d:'Show me on the map',sub:'地図で見せてください'},
+            {w:'How long does it take',d:'How long does it take',sub:'どのくらいかかりますか'},
+            {w:'Please call a taxi',d:'Please call a taxi',sub:'タクシーを呼んでください'},
+           ]},
+        ]
+      },
+      {
+        id:5, name:'Chapter 5: Daily Life',
+        desc:'Weather, feelings, health — everyday conversation.',
+        scene:'daily',
+        unlockXP:1000,
+        story_pass:'You can have daily conversations! Keep going.',
+        story_fail:'Daily life phrases need more practice.',
+        levels:[
+          {id:9, name:'Feelings & Health', type:'speak', passRate:0.75,
+           desc:'Express how you feel',
+           items:[
+            {w:"I'm fine",d:"I'm fine",sub:'元気です'},
+            {w:"I'm tired",d:"I'm tired",sub:'疲れました'},
+            {w:'It hurts',d:'It hurts',sub:'痛いです'},
+            {w:"I'm cold",d:"I'm cold",sub:'寒いです'},
+            {w:"I'm hot",d:"I'm hot",sub:'暑いです'},
+            {w:"I'm happy",d:"I'm happy",sub:'嬉しいです'},
+            {w:"I'm hungry",d:"I'm hungry",sub:'お腹が空きました'},
+            {w:'I need a doctor',d:'I need a doctor',sub:'医者が必要です'},
+            {w:"I don't feel well",d:"I don't feel well",sub:'気分が悪いです'},
+            {w:"I'm okay",d:"I'm okay",sub:'大丈夫です'},
+           ]},
+          {id:10, name:'Conversations', type:'speak', passRate:0.7,
+           desc:'Real conversation practice',
+           items:[
+            {w:"Let's go together",d:"Let's go together",sub:'一緒に行きましょう'},
+            {w:'Please say that again',d:'Please say that again',sub:'もう一度言ってください'},
+            {w:'Please speak slowly',d:'Please speak slowly',sub:'ゆっくり話してください'},
+            {w:'I understand a little',d:'I understand a little',sub:'少しわかります'},
+            {w:'Do you speak Japanese',d:'Do you speak Japanese',sub:'日本語を話せますか'},
+            {w:'Can you help me',d:'Can you help me',sub:'手伝っていただけますか'},
+            {w:'May I take a photo',d:'May I take a photo',sub:'写真を撮ってもいいですか'},
+            {w:'I would like to make a reservation',d:'I would like to make a reservation',sub:'予約したいのですが'},
+            {w:'What time does it open',d:'What time does it open',sub:'何時に開きますか'},
+            {w:'Nice talking to you',d:'Nice talking to you',sub:'お話できてよかったです'},
+           ]},
+        ]
+      },
+    ]
+  }
+};
+
+// Scene SVGs
+const SCENES = {
+  greeting:`<rect width="600" height="100" fill="#e8f4ea"/>
+    <circle cx="300" cy="20" r="18" fill="#fbbf24" opacity="0.8"/>
+    <rect x="0" y="70" width="600" height="30" fill="#5a9e6f" opacity="0.4"/>
+    <circle cx="120" cy="55" r="30" fill="#fff" opacity="0.5"/>
+    <circle cx="480" cy="50" r="25" fill="#fff" opacity="0.4"/>
+    <text x="300" y="52" font-size="28" text-anchor="middle" fill="#1a6b4a" font-family="sans-serif">👋</text>`,
+  numbers:`<rect width="600" height="100" fill="#e8eaf8"/>
+    <text x="80" y="60" font-size="36" fill="#7060c8" opacity="0.4" font-family="sans-serif" font-weight="700">1</text>
+    <text x="180" y="65" font-size="40" fill="#5a9e6f" opacity="0.4" font-family="sans-serif" font-weight="700">2</text>
+    <text x="290" y="58" font-size="32" fill="#c04848" opacity="0.4" font-family="sans-serif" font-weight="700">3</text>
+    <text x="390" y="66" font-size="42" fill="#c9943a" opacity="0.4" font-family="sans-serif" font-weight="700">4</text>
+    <text x="500" y="60" font-size="36" fill="#7bb3d4" opacity="0.4" font-family="sans-serif" font-weight="700">5</text>`,
+  shop:`<rect width="600" height="100" fill="#fef4e0"/>
+    <rect x="50" y="30" width="100" height="55" fill="#c9943a" opacity="0.5" rx="4"/>
+    <rect x="45" y="22" width="110" height="12" fill="#d4822a" opacity="0.6" rx="2"/>
+    <rect x="200" y="38" width="80" height="47" fill="#7060c8" opacity="0.4" rx="4"/>
+    <rect x="196" y="30" width="88" height="12" fill="#a090e8" opacity="0.5" rx="2"/>
+    <rect x="350" y="32" width="90" height="53" fill="#5a9e6f" opacity="0.5" rx="4"/>
+    <rect x="346" y="24" width="98" height="12" fill="#4a8e5e" opacity="0.6" rx="2"/>`,
+  street:`<rect width="600" height="100" fill="#e0eaf8"/>
+    <rect x="0" y="65" width="600" height="35" fill="#9090a0" opacity="0.3"/>
+    <rect x="0" y="60" width="600" height="8" fill="#c0c0c8" opacity="0.5"/>
+    <rect x="80" y="20" width="60" height="45" fill="#7060c8" opacity="0.5" rx="3"/>
+    <rect x="250" y="15" width="70" height="50" fill="#c04848" opacity="0.4" rx="3"/>
+    <rect x="430" y="25" width="55" height="40" fill="#c9943a" opacity="0.5" rx="3"/>
+    <line x1="250" y1="65" x2="300" y2="65" stroke="#fbbf24" stroke-width="3"/>`,
+  daily:`<rect width="600" height="100" fill="#f0f4e8"/>
+    <circle cx="300" cy="18" r="16" fill="#fbbf24" opacity="0.7"/>
+    <ellipse cx="100" cy="35" rx="40" ry="22" fill="#fff" opacity="0.5"/>
+    <ellipse cx="480" cy="28" rx="50" ry="25" fill="#fff" opacity="0.4"/>
+    <rect x="0" y="72" width="600" height="28" fill="#5a9e6f" opacity="0.35"/>
+    <rect x="120" y="50" width="50" height="28" fill="#c9943a" opacity="0.4" rx="3"/>
+    <rect x="400" y="44" width="60" height="34" fill="#7060c8" opacity="0.35" rx="3"/>`,
+};
+
+// Food/object icons for picture cards
+const ICONS = {
+  water:`<ellipse cx="40" cy="48" rx="16" ry="22" fill="#b8d8ee" stroke="#7bb3d4" stroke-width="1.5"/><ellipse cx="40" cy="26" rx="8" ry="4" fill="none" stroke="#7bb3d4" stroke-width="1.5"/>`,
+  coffee:`<ellipse cx="40" cy="48" rx="18" ry="14" fill="#8B6040" stroke="#6B4020" stroke-width="1.5"/><path d="M58 42 Q66 42 66 50 Q66 58 58 58" stroke="#6B4020" stroke-width="1.5" fill="none"/><path d="M32 28 Q32 18 40 18 Q48 18 48 28" stroke="#9B7050" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+  tea:`<ellipse cx="40" cy="50" rx="18" ry="12" fill="#90c878" stroke="#5a9e6f" stroke-width="1.5"/><path d="M58 44 Q66 44 66 52 Q66 60 58 60" stroke="#5a9e6f" stroke-width="1.5" fill="none"/><path d="M36 28 Q34 18 40 18" stroke="#5a9e6f" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+  bread:`<ellipse cx="40" cy="46" rx="24" ry="16" fill="#f0c878" stroke="#c9943a" stroke-width="1.5"/><path d="M20 40 Q40 28 60 40" stroke="#d4a848" stroke-width="2" fill="none"/>`,
+  rice:`<ellipse cx="40" cy="50" rx="22" ry="14" fill="#f8f4e8" stroke="#c8b870" stroke-width="1.5"/><ellipse cx="40" cy="36" rx="18" ry="12" fill="#f8f4e8" stroke="#c8b870" stroke-width="1.5"/>`,
+  apple:`<circle cx="40" cy="38" r="18" fill="#fdecea" stroke="#c04848" stroke-width="1.5"/><path d="M40 20c0-8 10-10 10-10" stroke="#5a9e6f" stroke-width="2" stroke-linecap="round"/>`,
+  fish:`<ellipse cx="37" cy="40" rx="20" ry="12" fill="#b8d8ee" stroke="#7bb3d4" stroke-width="1.5"/><path d="M57 40l12-12v24Z" fill="#b8d8ee" stroke="#7bb3d4" stroke-width="1.5"/><circle cx="28" cy="38" r="2.5" fill="#7bb3d4"/>`,
+  cake:`<rect x="20" y="42" width="40" height="22" rx="4" fill="#fdecea" stroke="#c04848" stroke-width="1.5"/><path d="M20 42 Q40 32 60 42" stroke="#c04848" stroke-width="1.5" fill="none"/><line x1="40" y1="32" x2="40" y2="24" stroke="#c04848" stroke-width="2"/><circle cx="40" cy="22" r="3" fill="#f0c060"/>`,
+  soup:`<path d="M18 40 Q20 60 40 62 Q60 60 62 40Z" fill="#fef4e0" stroke="#c9943a" stroke-width="1.5"/><path d="M14 40 Q14 36 18 36 L62 36 Q66 36 66 40" stroke="#c9943a" stroke-width="1.5" fill="none"/><path d="M30 26 Q28 16 34 18" stroke="#7bb3d4" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M40 24 Q38 14 44 16" stroke="#7bb3d4" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+  menu:`<rect x="22" y="14" width="36" height="52" rx="4" fill="#f8f4e8" stroke="#c9943a" stroke-width="1.5"/><line x1="30" y1="28" x2="50" y2="28" stroke="#c9943a" stroke-width="1.5"/><line x1="30" y1="38" x2="50" y2="38" stroke="#c9943a" stroke-width="1.5"/><line x1="30" y1="48" x2="44" y2="48" stroke="#c9943a" stroke-width="1.5"/>`,
+  tempura:`<ellipse cx="40" cy="46" rx="20" ry="14" fill="#f0c878" stroke="#c9943a" stroke-width="1.5"/><path d="M28 36 Q40 24 52 36" stroke="#d4a848" stroke-width="2" fill="none"/>`,
+  sushi:`<ellipse cx="40" cy="50" rx="20" ry="10" fill="#f8f4e8" stroke="#c8b870" stroke-width="1.5"/><ellipse cx="40" cy="40" rx="14" ry="8" fill="#fdecea" stroke="#c04848" stroke-width="1.5"/>`,
+  ramen:`<ellipse cx="40" cy="50" rx="22" ry="14" fill="#fef4e0" stroke="#c9943a" stroke-width="1.5"/><path d="M24 40 Q32 32 40 40 Q48 32 56 40" stroke="#c04848" stroke-width="1.5" fill="none"/><circle cx="32" cy="44" r="4" fill="#c04848" opacity="0.5"/><circle cx="48" cy="44" r="4" fill="#5a9e6f" opacity="0.5"/>`,
+};
+
+// ========================
+// UI TEXT
+// ========================
+const UI_TEXT = {
+  ja: {
+    appTitle:'Kotoba Learn',
+    back:'地図',
+    mapBtn:'旅の地図に戻る',
+    nextBtn:'次の旅へ →',
+    retryBtn:'もう一度 ↺',
+    switchLang:'🔄 言語変更',
+    micHint:'マイクを押して話す',
+    listening:'聞いています...',
+    speaking:'話しています…',
+    playBtn:'お手本を聞く',
+    playStop:'停止',
+    speed:'速さ',
+    hintTap:'タップでお手本を聞く',
+    playing:'再生中...',
+    okMsgs:['よかった！✨','正解！🌸','素晴らしい！','その調子！💫','完璧！⭐'],
+    ngMsgs:['もう一度💪','惜しい！','大丈夫！','次は行ける！','ゆっくりでいい'],
+    lockNotice:(xp)=>`🔒 ${xp} XP で解放`,
+    streakLabel:(n)=> n===0?'🌱 学習を始めよう': n<5?'🗺 旅が始まった': '🌸 続けよう',
+  },
+  en: {
+    appTitle:'Kotoba Learn',
+    back:'Map',
+    mapBtn:'Back to Map',
+    nextBtn:'Next Stage →',
+    retryBtn:'Try Again ↺',
+    switchLang:'🔄 Change Language',
+    micHint:'Tap mic to speak',
+    listening:'Listening...',
+    speaking:'Recording...',
+    playBtn:'Listen to example',
+    playStop:'Stop',
+    speed:'Speed',
+    hintTap:'Tap to hear example',
+    playing:'Playing...',
+    okMsgs:['Great! ✨','Correct! 🌸','Excellent!','Keep it up! 💫','Perfect! ⭐'],
+    ngMsgs:['Try again 💪','Almost!','Keep going!','Next time!','Take it slowly'],
+    lockNotice:(xp)=>`🔒 Unlock at ${xp} XP`,
+    streakLabel:(n)=> n===0?'🌱 Start learning': n<5?'🗺 Journey begun': '🌸 Keep going',
+  }
+};
+
+// ========================
+// STATE
+// ========================
+let ST = {xp:0, score:0, unlocked:1, stars:{}, uiLang:'ja', learnLang:'en', weak:{}};
+let APP_MIC_GRANTED = false;  // アプリ全体で1回だけ許可を取得
+
+async function requestMicOnce(){
+  if(APP_MIC_GRANTED) return true;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    stream.getTracks().forEach(t=>t.stop());
+    APP_MIC_GRANTED = true;
+    return true;
+  } catch(e) {
+    APP_MIC_GRANTED = false;
+    const isJa = ST.uiLang==='ja';
+    if(location.protocol==='file:'){
+      alert(isJa
+        ? 'マイク許可について: HTTPSサーバー（GitHub Pages等）で開くと毎回の確認が不要になります。'
+        : 'Tip: Host on HTTPS (e.g. GitHub Pages) to avoid repeated mic prompts.');
+    }
+    return false;
+  }
+}
+// weak: { "lang:word": {word, sub, lang, learnLang, missCount, addedAt} }
+let draftUI='ja', draftLearn='en';
+let Q = {ch:null,lv:null,qs:[],qi:0,correct:0,hearts:3,answers:[],
+         isRec:false,rec:null,wt:null,isTTS:false,voices:[],voice:null,
+         micGranted:false, micStream:null};
+
+function loadST(){try{const d=localStorage.getItem('kl_state');if(d)ST={...ST,...JSON.parse(d)};}catch(e){}}
+function saveST(){try{localStorage.setItem('kl_state',JSON.stringify(ST));}catch(e){}}
+
+function tx(){return UI_TEXT[ST.uiLang];}
+function pack(){return PACKS[ST.learnLang];}
+
+// ========================
+// LANG SELECT
+// ========================
+function setUI(lang){
+  draftUI=lang;
+  ['ja','en'].forEach(l=>document.getElementById('ui-'+l).classList.toggle('selected',l===lang));
+  document.getElementById('lang-tagline').textContent=
+    lang==='ja'?'言語を選んで旅を始めよう':'Choose your language and start the journey';
+  document.getElementById('lang-start-btn').textContent=
+    lang==='ja'?'旅を始める →':'Start Learning →';
+}
+function setLearn(lang){
+  draftLearn=lang;
+  ['ja','en'].forEach(l=>document.getElementById('learn-'+l).classList.toggle('selected',l===lang));
+}
+function startApp(){
+  ST.uiLang=draftUI; ST.learnLang=draftLearn;
+  saveST();
+  updateNavLabels();
+  selectedPlacementLv=null;
+  buildPlacementScreen();
+  showScreen('screen-placement');
+}
+function showLangSelect(){showScreen('screen-lang');}
+
+// ========================
+// MAP
+// ========================
+function buildMap(){
+  const t=tx(), p=pack();
+  document.getElementById('xp-txt').textContent=ST.score+' / 1000点';
+  document.getElementById('xp-fill').style.width=(ST.score/10)+'%';
+  document.getElementById('streak-chip').textContent=t.streakLabel(Object.keys(ST.stars).length);
+  document.getElementById('lang-switch-label').textContent=t.switchLang;
+  setT('pl-change-btn', ST.uiLang==='ja'?'📊 レベル変更':'📊 Change Level');
+  document.getElementById('map-app-title').textContent=t.appTitle+' — '+(ST.learnLang==='ja'?'日本語':'English');
+  // ナビ表示
+  document.getElementById('bottom-nav').style.display='flex';
+  document.getElementById('nav-label-map').textContent=ST.uiLang==='ja'?'地図':'Map';
+  document.getElementById('nav-label-profile').textContent=ST.uiLang==='ja'?'レベル':'Level';
+
+  const body=document.getElementById('map-body');body.innerHTML='';
+
+  // 苦手リストバー
+  const weakItems=getWeakItems(ST.learnLang);
+  if(weakItems.length>0){
+    const isJa=ST.uiLang==='ja';
+    const bar=document.createElement('div');bar.className='weak-bar';
+    bar.innerHTML=`
+      <div class="weak-bar-icon">🔖</div>
+      <div class="weak-bar-info">
+        <div class="weak-bar-title">${isJa?'苦手単語を練習しよう':'Review Difficult Words'}</div>
+        <div class="weak-bar-sub">${isJa?`${weakItems.length}語が登録されています`:`${weakItems.length} words in your list`}</div>
+      </div>
+      <div class="weak-bar-count">${Math.min(weakItems.length,10)}語</div>`;
+    bar.onclick=()=>navTo('weak');
+    body.appendChild(bar);
+  }
+  p.chapters.forEach((ch,ci)=>{
+    const allLvIds=ch.levels.map(l=>l.id);
+    const unlocked=ST.score>=ch.unlockXP;
+    const allDone=allLvIds.every(id=>(ST.stars[id]||0)>0);
+    const isCurrent=unlocked&&!allDone;
+
+    const card=document.createElement('div');
+    card.className='chapter-card'+(unlocked?'':' locked')+(isCurrent?' current-ch':'');
+
+    const doneCount=allLvIds.filter(id=>(ST.stars[id]||0)>0).length;
+    card.innerHTML=`
+      <div class="chapter-scene">
+        <svg viewBox="0 0 600 100" preserveAspectRatio="xMidYMid slice">${SCENES[ch.scene]}</svg>
+        <div class="chapter-scene-overlay"></div>
+        <div class="chapter-scene-text">
+          <div><div class="ch-num">${unlocked?ch.id:'???'}</div><div class="ch-title">${unlocked?ch.name:'???'}</div></div>
+          <div class="ch-progress">${unlocked?doneCount+'/'+allLvIds.length:t.lockNotice(ch.unlockXP)}</div>
+        </div>
+      </div>
+      <div class="chapter-body">
+        <div class="chapter-desc">${unlocked?ch.desc:'...'}</div>
+        <div class="stages-row" id="sr-${ch.id}"></div>
+      </div>`;
+    body.appendChild(card);
+
+    if(unlocked){
+      const sr=card.querySelector('#sr-'+ch.id);
+      ch.levels.forEach((lv,li)=>{
+        const stars=ST.stars[lv.id]||0;
+        const prevOk=li===0||(ST.stars[ch.levels[li-1].id]||0)>0;
+        const pipUnlocked=prevOk;
+        const isCur=pipUnlocked&&stars===0;
+        const pip=document.createElement('button');
+        pip.className='stage-pip '+(stars>0?'pip-done':isCur?'pip-current':pipUnlocked?'pip-open':'pip-locked');
+        pip.innerHTML=`<span style="font-size:10px">${lv.id}</span><span style="font-size:8px;margin-top:1px">${lv.name.slice(0,4)}</span>${stars>0?`<span class="pip-star">${'⭐'.repeat(stars)}</span>`:''}`;
+        if(pipUnlocked) pip.onclick=()=>startLevel(ch,lv);
+        sr.appendChild(pip);
+      });
+    }
+  });
+}
+
+// ========================
+// PRACTICE
+// ========================
+function startLevel(ch,lv){
+  Q.ch=ch;Q.lv=lv;Q.qi=0;Q.correct=0;Q.hearts=3;Q.answers=[];
+  Q.isRec=false;Q.rec=null;Q.wt=null;Q.isTTS=false;
+  const pool=[...lv.items];
+  for(let i=pool.length-1;i>0;i--){const j=~~(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  Q.qs=pool.slice(0,10);
+  document.getElementById('p-title').textContent=ch.name;
+  document.getElementById('p-sub').textContent=lv.name+' — '+lv.desc;
+  document.getElementById('btn-back-label').textContent=tx().back;
+  showScreen('screen-practice');
+
+  // マイク許可（グローバルフラグで管理。2回目以降はダイアログなし）
+  if(lv.type==='speak'||lv.type==='speak_pic'||lv.isWeak){
+    requestMicOnce().then(ok=>{
+      if(!ok) alert2(ST.uiLang==='ja'
+        ?'マイクへのアクセスを許可してください（アドレスバー横の設定から）'
+        :'Please allow microphone access in browser settings');
+    });
+  }
+
+  renderQ();
+}
+
+function renderHU(){document.getElementById('hearts').textContent=[0,1,2].map(i=>i<Q.hearts?'❤️':'🖤').join('');}
+function renderQ(){
+  renderHU();
+  const total=Q.qs.length;
+  document.getElementById('q-fill').style.width=(Q.qi/total*100)+'%';
+  document.getElementById('q-label').textContent='Q'+(Q.qi+1);
+  document.getElementById('q-score').textContent='✓ '+Q.correct;
+  document.getElementById('alert-box').style.display='none';
+  const card=document.getElementById('q-card');card.innerHTML='';
+  const q=Q.qs[Q.qi];const lv=Q.lv;
+  if(lv.type==='speak')buildSpeak(card,q);
+  else if(lv.type==='speak_pic')buildSpeakPic(card,q);
+  else if(lv.type==='point')buildPoint(card,q);
+}
+
+function buildSpeak(card,q){
+  addBadge(card,'🎤 '+(ST.uiLang==='ja'?'発話':'Speaking'),'badge-speak');
+  addBookmarkBtn(card, q.w);
+  const t=document.createElement('div');
+  t.className='target-main'+(ST.learnLang==='en'?' en':'');
+  t.textContent=q.d;card.appendChild(t);
+  if(q.sub){const s=document.createElement('div');s.className='target-sub';s.textContent=q.sub;card.appendChild(s);}
+  addTTS(card,q.w);addMic(card,q.w,Q.lv.passRate);
+}
+function buildSpeakPic(card,q){
+  addBadge(card,'🎤 '+(ST.uiLang==='ja'?'絵を見て言おう':'Name this'),'badge-speak');
+  addBookmarkBtn(card, q.w);
+  const pic=document.createElement('div');pic.className='pic-frame';
+  pic.onclick=()=>ttsSpeak(q.w);pic.title=tx().hintTap;
+  pic.innerHTML=`<svg viewBox="0 0 80 80" fill="none">${ICONS[q.ic]||ICONS.apple}</svg>`;
+  card.appendChild(pic);
+  const hint=document.createElement('div');hint.className='target-hint';
+  hint.textContent=tx().hintTap;card.appendChild(hint);
+  addTTS(card,q.w);addMic(card,q.w,Q.lv.passRate);
+}
+function buildPoint(card,q){
+  addBadge(card,'👆 '+(ST.uiLang==='ja'?'聞いて選ぼう':'Listen & Choose'),'badge-listen');
+  const pb=document.createElement('div');pb.className='prompt-box';
+  pb.innerHTML=`<strong>「${q.prompt||q.target}」</strong>${ST.uiLang==='ja'?'<br>これはどれですか？':'<br>Which one is this?'}`;
+  card.appendChild(pb);
+  setTimeout(()=>ttsSpeak(q.prompt||q.target),400);
+  const grid=document.createElement('div');grid.className='choice-grid';
+  q.choices.forEach(c=>{
+    const btn=document.createElement('button');btn.className='choice-btn';
+    btn.textContent=c;btn.onclick=()=>checkChoice(c,q.target,grid);
+    grid.appendChild(btn);
+  });
+  card.appendChild(grid);
+  const replay=document.createElement('button');replay.className='btn-play';
+  replay.innerHTML='<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2l10 6-10 6V2z"/></svg> '+(ST.uiLang==='ja'?'もう一度聞く':'Listen again');
+  replay.onclick=()=>ttsSpeak(q.prompt||q.target);
+  card.appendChild(replay);
+}
+
+function addBadge(card,txt,cls){
+  const b=document.createElement('div');b.className='q-type-badge '+cls;b.textContent=txt;card.appendChild(b);
+}
+function addTTS(card,word){
+  const row=document.createElement('div');row.className='tts-row';
+  row.innerHTML=`<span class="tts-lbl">${tx().speed}</span><input type="range" id="rate" min="0.5" max="1.5" step="0.1" value="0.8" oninput="document.getElementById('rv').textContent=parseFloat(this.value).toFixed(1)"><span class="tts-val" id="rv">0.8</span>`;
+  card.appendChild(row);
+  const btn=document.createElement('button');btn.className='btn-play';btn.id='play-btn';
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2l10 6-10 6V2z"/></svg> '+tx().playBtn;
+  btn.onclick=()=>ttsSpeak(word);card.appendChild(btn);
+}
+function addMic(card,word,pr){
+  const wrap=document.createElement('div');wrap.className='mic-wrap';
+  const btn=document.createElement('button');btn.className='mic-btn';btn.id='mic-btn';
+  btn.innerHTML=`<svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`;
+  btn.onclick=()=>toggleRec(word,pr);
+  const wave=document.createElement('div');wave.className='wave';wave.id='wave';wave.style.opacity='0';
+  for(let i=1;i<=5;i++){const b=document.createElement('div');b.className='wbar';b.id='b'+i;b.style.height='8px';wave.appendChild(b);}
+  const lbl=document.createElement('div');lbl.className='mic-lbl';lbl.id='mic-lbl';lbl.textContent=tx().micHint;
+  wrap.appendChild(btn);wrap.appendChild(wave);wrap.appendChild(lbl);card.appendChild(wrap);
+  const interim=document.createElement('div');interim.className='interim-box';interim.id='interim';interim.textContent='—';
+  card.appendChild(interim);
+}
+function el2(tag,cls){const e=document.createElement(tag);e.className=cls;return e;}
+
+// TTS
+function loadVoices(){
+  Q.voices=window.speechSynthesis.getVoices();
+  const lang=pack().ttsLang;
+  Q.voice=Q.voices.find(v=>v.lang===lang)||Q.voices.find(v=>v.lang.startsWith(lang.split('-')[0]))||null;
+}
+function ttsSpeak(word){
+  if(!('speechSynthesis' in window)){alert2(ST.uiLang==='ja'?'音声合成非対応':'TTS not supported');return;}
+  if(Q.isTTS){window.speechSynthesis.cancel();Q.isTTS=false;}
+  loadVoices();
+  const utt=new SpeechSynthesisUtterance(word);
+  utt.lang=pack().ttsLang;
+  utt.rate=parseFloat(document.getElementById('rate')?.value||'0.8');
+  utt.pitch=1.0;if(Q.voice)utt.voice=Q.voice;
+  utt.onstart=()=>Q.isTTS=true;
+  utt.onend=utt.onerror=()=>Q.isTTS=false;
+  window.speechSynthesis.speak(utt);
+}
+
+// STT
+function toggleRec(w,pr){Q.isRec?stopRec():startRec(w,pr);}
+function startRec(w,pr){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert2(ST.uiLang==='ja'?'Chrome/Edge をお使いください':'Use Chrome or Edge');return;}
+  Q.rec=new SR();Q.rec.lang=pack().sttLang;Q.rec.interimResults=true;Q.rec.maxAlternatives=3;Q.rec.continuous=false;
+  Q.rec.onstart=()=>{
+    Q.isRec=true;g('mic-btn')?.classList.add('rec');
+    const wv=g('wave');if(wv)wv.style.opacity='1';
+    setT('mic-lbl',tx().speaking);setT('interim',tx().listening);
+    Q.wt=setInterval(()=>{for(let i=1;i<=5;i++){const b=g('b'+i);if(b)b.style.height=(6+Math.random()*18)+'px';}},90);
+  };
+  Q.rec.onresult=e=>{
+    let interim='',final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)final+=e.results[i][0].transcript;
+      else interim+=e.results[i][0].transcript;
+    }
+    setT('interim',interim||final||'...');
+    if(final)evalSpoken(final.trim(),w,pr);
+  };
+  Q.rec.onerror=e=>{
+    stopRecClean();
+    const m=ST.uiLang==='ja'
+      ?{'not-allowed':'マイクを許可してください','no-speech':'もう少し大きな声で','network':'接続を確認'}
+      :{'not-allowed':'Please allow microphone','no-speech':'Speak louder','network':'Check connection'};
+    alert2(m[e.error]||'Error: '+e.error);
+  };
+  Q.rec.onend=()=>stopRecClean();
+  Q.rec.start();
+}
+function stopRec(){if(Q.rec)Q.rec.stop();}
+function stopRecClean(){
+  clearInterval(Q.wt);Q.wt=null;Q.isRec=false;
+  g('mic-btn')?.classList.remove('rec');
+  const wv=g('wave');if(wv)wv.style.opacity='0';
+  setT('mic-lbl',tx().micHint);
+}
+
+function normalize(s){
+  return s.toLowerCase()
+    .replace(/[\u30A1-\u30F6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60))
+    .replace(/[^\u3040-\u309Fa-z0-9]/g,'')
+    .replace(/\s+/g,'');
+}
+
+// ========================
+// 詳細フィードバック表示
+// ========================
+function evalSpoken(spoken, target, pr){
+  const sp=normalize(spoken), tg=normalize(target);
+  const ta=[...tg], sa=[...sp];
+
+  // 文字ごとの照合（編集距離ベース：位置ズレも考慮）
+  let matched=0;
+  const charResults=ta.map((ch,i)=>{
+    if(sa[i]===ch){matched++;return{ch,status:'ok',got:sa[i]};}
+    else if(sa.includes(ch)){return{ch,status:'missing',got:sa[i]||null};}  // 順番違い
+    else{return{ch,status:'ng',got:sa[i]||null};}
+  });
+  const extraChars=sa.filter((_,i)=>i>=ta.length);
+
+  const score=ta.length?matched/ta.length:0;
+  const pct=Math.round(score*100);
+  const pass=score>=pr;
+
+  // 既存のinterimをフィードバックUIに置き換え
+  const interim=g('interim');
+  if(interim) interim.style.display='none';
+
+  // 既存のfb-detailがあれば削除
+  const oldFb=g('fb-detail-box');
+  if(oldFb) oldFb.remove();
+
+  const card=g('q-card');
+  const fbBox=document.createElement('div');
+  fbBox.className='fb-detail';fbBox.id='fb-detail-box';
+
+  // 1. 文字ごと色分け表示
+  const charRow=document.createElement('div');charRow.className='fb-char-row';
+  charResults.forEach(r=>{
+    const wrap=document.createElement('div');
+    wrap.className='fb-char '+r.status;
+    const label={ok:'✓ 正解',ng:'× 違う',missing:'△ ズレ'}[r.status];
+    wrap.innerHTML=`<span>${r.ch}</span><span class="fb-char-label">${label}</span>`;
+    charRow.appendChild(wrap);
+  });
+  // 余分な文字（言いすぎ）
+  extraChars.forEach(ch=>{
+    const wrap=document.createElement('div');wrap.className='fb-char extra';
+    wrap.innerHTML=`<span>${ch}</span><span class="fb-char-label">余分</span>`;
+    charRow.appendChild(wrap);
+  });
+  fbBox.appendChild(charRow);
+
+  // 2. 認識された発話を表示
+  const heardDiv=document.createElement('div');heardDiv.className='fb-heard';
+  heardDiv.innerHTML=ST.uiLang==='ja'
+    ?`認識: <strong>「${spoken}」</strong> → 一致率 <strong>${pct}%</strong>`
+    :`Heard: <strong>"${spoken}"</strong> → Match: <strong>${pct}%</strong>`;
+  fbBox.appendChild(heardDiv);
+
+  // 3. アドバイス文
+  const advice=document.createElement('div');
+  const ngChars=charResults.filter(r=>r.status==='ng').map(r=>r.ch);
+  const missingChars=charResults.filter(r=>r.status==='missing').map(r=>r.ch);
+  let adviceText='', adviceClass='';
+  const isJa=ST.uiLang==='ja';
+  if(pct===100){
+    adviceText=isJa?'🎉 完璧！すべての音が正確です。次の問題へ進もう！':'🎉 Perfect! All sounds are correct!';
+    adviceClass='ok';
+  } else if(pct>=80){
+    const fixList=ngChars.concat(missingChars).map(c=>`「${c}」`).join('・');
+    adviceText=isJa
+      ?`✨ ほぼ正解！${fixList||'語末の音'}をもう少しはっきり発音すると完璧です。`
+      :`✨ Almost! Try to pronounce ${fixList||'the ending'} a bit more clearly.`;
+    adviceClass='partial';
+  } else if(pass){
+    const fixList=ngChars.map(c=>`「${c}」`).join('・');
+    adviceText=isJa
+      ?`👍 合格！${fixList?fixList+'の音を練習するとより上手くなります。':''}`
+      :`👍 Passed! ${fixList?'Work on pronouncing '+fixList+' more accurately.':''}`;
+    adviceClass='partial';
+  } else {
+    if(ngChars.length>0){
+      const fix=ngChars.map(c=>`「${c}」`).join('・');
+      adviceText=isJa
+        ?`💪 ${fix}の音が正しく認識されませんでした。お手本をもう一度聞いて、ゆっくり発音してみましょう。`
+        :`💪 The sound(s) ${fix} weren't recognized. Listen to the example again and try slowly.`;
+    } else {
+      adviceText=isJa
+        ?`💪 もう一度チャレンジ！お手本をよく聞いてから、ゆっくり発音してみましょう。`
+        :`💪 Try again! Listen carefully to the example, then speak slowly.`;
+    }
+    adviceClass='ng';
+  }
+  advice.className=`fb-advice ${adviceClass}`;
+  advice.textContent=adviceText;
+  fbBox.appendChild(advice);
+
+  // 4. ボタン（もう一度 / 次へ）
+  const actions=document.createElement('div');actions.className='fb-actions';
+  const retryBtn=document.createElement('button');
+  retryBtn.className='fb-retry';
+  retryBtn.textContent=isJa?'🎤 もう一度':'🎤 Try again';
+  retryBtn.onclick=()=>{fbBox.remove();if(interim)interim.style.display='';setT('interim','—');setT('mic-lbl',tx().micHint);};
+  const nextBtn=document.createElement('button');
+  nextBtn.className='fb-next'+(pass?'':' ng-next');
+  nextBtn.textContent=isJa?(pass?'次の問題 →':'次へスキップ →'):(pass?'Next →':'Skip →');
+  nextBtn.onclick=()=>nextQ();
+  actions.appendChild(retryBtn);actions.appendChild(nextBtn);
+  fbBox.appendChild(actions);
+
+  card.appendChild(fbBox);
+
+  // スコア・ハート更新
+  Q.answers.push({correct:pass,score,spoken,target});
+  if(pass){
+    Q.correct++;
+    // 苦手リストにあって正解なら missCount を減らす（完全正解なら削除）
+    if(pct===100 && isInWeak(target)){
+      const key=weakKey(target, ST.learnLang);
+      if(ST.weak[key]){
+        ST.weak[key].missCount=Math.max(0,(ST.weak[key].missCount||1)-1);
+        if(ST.weak[key].missCount===0 && !ST.weak[key].manual) delete ST.weak[key];
+        saveST();
+      }
+    }
+  } else {
+    Q.hearts=Math.max(0,Q.hearts-1);renderHU();
+    // 不正解は自動で苦手リストへ（苦手練習モード以外）
+    if(!Q.lv.isWeak){
+      const q=Q.qs[Q.qi];
+      addToWeak({w:target, sub:q?.sub||q?.d||''}, ST.learnLang, true);
+    }
+  }
+
+  // 問題進捗バー更新
+  const total=Q.qs.length;
+  const fill=g('q-fill');
+  if(fill) fill.style.width=((Q.qi+1)/total*100)+'%';
+  setT('q-score','✓ '+Q.correct);
+}
+function checkChoice(chosen,target,grid){
+  grid.querySelectorAll('.choice-btn').forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===target)b.classList.add('ok');
+    else if(b.textContent===chosen&&chosen!==target)b.classList.add('ng');
+  });
+  const ok=chosen===target;
+  Q.answers.push({correct:ok});
+  if(ok){Q.correct++;flash(true);}else{Q.hearts=Math.max(0,Q.hearts-1);renderHU();flash(false);}
+  setT('q-score','✓ '+Q.correct);
+  setTimeout(()=>nextQ(),1200);
+}
+function nextQ(){
+  Q.qi++;
+  if(Q.qi>=Q.qs.length||Q.hearts<=0){
+    flash(Q.hearts>0);
+    setTimeout(()=>showResult(),400);
+  } else {
+    renderQ();
+  }
+}
+
+// FLASH
+function flash(ok){
+  const msgs=ok?tx().okMsgs:tx().ngMsgs;
+  const inner=g('fb-inner');inner.textContent=msgs[~~(Math.random()*msgs.length)];
+  inner.className='fb-inner '+(ok?'fb-ok':'fb-ng');
+  g('fb-flash').style.display='flex';
+  setTimeout(()=>g('fb-flash').style.display='none',900);
+}
+
+// RESULT
+function showResult(){
+  const lv=Q.lv,ch=Q.ch;
+  const total=Q.qs.length,pct=Math.round(Q.correct/total*100);
+  const pass=pct>=Math.round(lv.passRate*100);
+  const stars=pct>=92?3:pct>=75?2:pass?1:0;
+
+  // ── スコア計算（1000点満点・レベル区間）──
+  // 各ゲームレベル(id:1-10)を言語発達レベル(Lv:1-10)の100点区間に対応
+  // id1-2 → Lv1-2（0-200）, id3-6 → Lv3-6（200-600）, id7-10 → Lv7-10（600-1000）
+  const scoreBand = [
+    {ids:[1,2],   lvRange:[0,200],   pts:100},
+    {ids:[3,4],   lvRange:[200,400], pts:100},
+    {ids:[5,6],   lvRange:[400,600], pts:100},
+    {ids:[7,8],   lvRange:[600,800], pts:100},
+    {ids:[9,10],  lvRange:[800,1000],pts:100},
+  ];
+  const band=scoreBand.find(b=>b.ids.includes(lv.id))||scoreBand[0];
+  // 1セッションの最大加算 = 区間100点 ÷ 2レベル × 精度
+  const maxGain=Math.round(band.pts/2);
+  const scoreGain=pass?Math.round(maxGain*(stars/3)*1.0+(Q.hearts/3)*Math.round(maxGain*0.2)):0;
+  const prevScore=ST.score;
+  if(pass){
+    ST.score=Math.min(1000, ST.score+scoreGain);
+    ST.xp=ST.score; // 互換性維持
+    ST.stars[lv.id]=Math.max(ST.stars[lv.id]||0,stars);
+  }
+  saveST();if(pct===100)confetti();
+
+  // スコア加算トースト
+  if(pass&&scoreGain>0){
+    const toast=document.createElement('div');
+    toast.className='score-gain-toast';
+    toast.textContent=`+${scoreGain}点！ 🎉`;
+    document.body.appendChild(toast);
+    setTimeout(()=>toast.remove(),2000);
+  }
+
+  const t=tx();
+  g('r-scene').innerHTML=`<svg viewBox="0 0 600 100" preserveAspectRatio="xMidYMid slice">${SCENES[ch.scene]}</svg>`;
+  setT('r-emoji',pct===100?'🏆':pass?'🎉':'💪');
+  setT('r-title',pct===100?(ST.uiLang==='ja'?'パーフェクト！':'Perfect!'):pass?(ST.uiLang==='ja'?'クリア！':'Clear!'):ST.uiLang==='ja'?'もう一息！':'Almost!');
+  setT('r-story',pass?ch.story_pass:ch.story_fail);
+  setT('r-stars',[1,2,3].map(i=>i<=stars?'⭐':'☆').join(''));
+  setT('r-score',pct+'%');
+  setT('r-xp','+'+(pass?scoreGain:0)+'点 → 合計 '+ST.score+'/1000点');
+  g('r-stats').innerHTML=
+    `<div class="stat-row"><span>${ST.uiLang==='ja'?'正解数':'Correct'}</span><span>${Q.correct} / ${total}</span></div>
+     <div class="stat-row"><span>${ST.uiLang==='ja'?'正確率':'Accuracy'}</span><span>${pct}%</span></div>
+     <div class="stat-row"><span>${ST.uiLang==='ja'?'残りハート':'Hearts left'}</span><span>${'❤️'.repeat(Q.hearts)||'0'}</span></div>`;
+  const nl=findNext();
+  const btn=g('r-btn1');
+  btn.textContent=pass&&nl?t.nextBtn:t.retryBtn;btn._nl=pass&&nl?nl:null;
+  setT('r-btn-map',t.mapBtn);
+  showScreen('screen-result');
+}
+function findNext(){
+  const p=pack();
+  for(const ch of p.chapters)for(let i=0;i<ch.levels.length;i++){
+    if(ch.levels[i].id===Q.lv.id){
+      if(i+1<ch.levels.length)return{ch,lv:ch.levels[i+1]};
+      const nci=p.chapters.indexOf(ch)+1;
+      if(nci<p.chapters.length&&ST.score>=p.chapters[nci].unlockXP)return{ch:p.chapters[nci],lv:p.chapters[nci].levels[0]};
+    }
+  }return null;
+}
+function resultNext(){const btn=g('r-btn1');if(btn._nl)startLevel(btn._nl.ch,btn._nl.lv);else startLevel(Q.ch,Q.lv);}
+
+// CONFETTI
+function confetti(){
+  const cols=['#1a6b4a','#f0c060','#7060c8','#c04848','#7bb3d4'];
+  for(let i=0;i<50;i++){
+    const e=document.createElement('div');e.className='cpiece';
+    e.style.cssText=`left:${Math.random()*100}vw;top:-10px;background:${cols[~~(Math.random()*5)]};animation-delay:${Math.random()*0.8}s;animation-duration:${0.9+Math.random()*0.8}s`;
+    document.body.appendChild(e);setTimeout(()=>e.remove(),2000);
+  }
+}
+
+// ========================
+// PLACEMENT TEST
+// ========================
+
+// プレイスメント画面に表示するレベル（Lv1,3,5,7,9の5択）
+const PLACEMENT_OPTIONS = [
+  {lv:1, stageIdx:0,
+   ja:{label:'ほぼゼロから',    desc:'挨拶・数字も自信がない。基礎から丁寧に始めたい。'},
+   en:{label:'Complete beginner', desc:'No experience. Want to start from scratch.'},
+  },
+  {lv:3, stageIdx:2,
+   ja:{label:'少し知っている',   desc:'簡単な挨拶や単語は知っている。単語を増やしたい。'},
+   en:{label:'Basic phrases',     desc:'Know some greetings. Want to expand vocabulary.'},
+  },
+  {lv:5, stageIdx:4,
+   ja:{label:'日常会話ができる', desc:'お店や道案内程度なら話せる。もっとスムーズに話したい。'},
+   en:{label:'Daily conversation', desc:'Can handle shops and directions. Want to be smoother.'},
+  },
+  {lv:7, stageIdx:6,
+   ja:{label:'中級レベル',       desc:'複雑な話題も話せるが、細かい表現に自信がない。'},
+   en:{label:'Intermediate',       desc:'Can discuss complex topics but want more precision.'},
+  },
+  {lv:9, stageIdx:8,
+   ja:{label:'上級に挑戦',       desc:'流暢に話せる。ネイティブレベルを目指したい。'},
+   en:{label:'Advanced',           desc:'Fluent speaker aiming for native-level mastery.'},
+  },
+];
+
+let selectedPlacementLv = null;
+
+function buildPlacementScreen(){
+  const isJa=ST.uiLang==='ja';
+
+  // フェーズ1を表示、2・3を非表示
+  g('pl-phase1').style.display='flex';
+  g('pl-phase2').style.display='none';
+  g('pl-phase3').style.display='none';
+
+  setT('pl-title',    isJa?'今のレベルを教えてください':'What is your current level?');
+  setT('pl-sub',      isJa?'一番近いものを選んでください。次に5問のクイックテストで確認します。':'Pick the closest option, then take a quick 5-question check.');
+  setT('pl-or-label', isJa?'または':'or');
+  setT('pl-skip-btn', isJa?'最初から始める（Lv.1）':'Start from the beginning (Lv.1)');
+  setT('pl-start-btn',isJa?'このレベルで確認テストを受ける →':'Confirm with a quick test →');
+
+  const cards=g('pl-cards');cards.innerHTML='';
+  PLACEMENT_OPTIONS.forEach(opt=>{
+    const info=isJa?opt.ja:opt.en;
+    const lv=SCORE_LEVELS[opt.lv-1];
+    const card=document.createElement('div');card.className='pl-card';
+    card.innerHTML=`
+      <div class="pl-card-ava">${lv.svg}</div>
+      <div class="pl-card-info">
+        <div class="pl-card-level">Lv.${opt.lv} — ${info.label}</div>
+        <div class="pl-card-desc">${info.desc}</div>
+        <div class="pl-card-range">${isJa?'スコア':'Score'} ${lv.pts[0]}〜${lv.pts[1]}点</div>
+      </div>
+      <div class="pl-card-check">✓</div>`;
+    card.onclick=()=>{
+      document.querySelectorAll('.pl-card').forEach(c=>c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedPlacementLv=opt;
+      const btn=g('pl-start-btn');
+      btn.textContent=isJa
+        ?`Lv.${opt.lv}（${info.label}）の会話テストへ →`
+        :`Start conversation test for Lv.${opt.lv} →`;
+    };
+    cards.appendChild(card);
+  });
+}
+
+// ========================
+// プレイスメント クイズフェーズ
+// ========================
+let plQuiz = {questions:[], qi:0, scores:[], targetLv:null, isRec:false, rec:null, wt:null};
+
+// ========================
+// プレイスメントクイズ問題プール
+// 構造: prompt=日本語で意味を提示, speak=実際に話させる言葉, passRate=合格閾値
+// ========================
+const PL_QUIZ_POOL = {
+  ja: {
+    1:[
+      {prompt:'「1」を日本語で言ってみて',      speak:'いち',         hint:'い・ち'},
+      {prompt:'「おはようございます」と言ってみて', speak:'おはよう',     hint:'お・は・よ・う'},
+      {prompt:'「目」を日本語で',              speak:'め',           hint:'め'},
+      {prompt:'「ありがとう」と言ってみて',      speak:'ありがとう',   hint:'あ・り・が・と・う'},
+      {prompt:'「犬」を日本語で',              speak:'いぬ',         hint:'い・ぬ'},
+    ],
+    3:[
+      {prompt:'「りんご」と言ってみて',         speak:'りんご',       hint:'り・ん・ご'},
+      {prompt:'「電話」を日本語で',            speak:'でんわ',       hint:'で・ん・わ'},
+      {prompt:'「これをください」と言ってみて',  speak:'これをください', hint:'こ・れ・を・く・だ・さ・い'},
+      {prompt:'「どこですか」と言ってみて',      speak:'どこですか',   hint:'ど・こ・で・す・か'},
+      {prompt:'「ありがとうございます」と言ってみて', speak:'ありがとうございます', hint:'ありがとうございます'},
+    ],
+    5:[
+      {prompt:'「いくらですか」と言ってみて',    speak:'いくらですか',      hint:'いくらですか'},
+      {prompt:'「右に曲がってください」と言ってみて', speak:'みぎにまがってください', hint:'みぎにまがってください'},
+      {prompt:'「駅はどこですか」と言ってみて',  speak:'えきはどこですか',   hint:'えきはどこですか'},
+      {prompt:'「おすすめは何ですか」と言ってみて', speak:'おすすめはなんですか', hint:'おすすめはなんですか'},
+      {prompt:'「お会計をお願いします」と言ってみて', speak:'おかんじょうをおねがいします', hint:'おかんじょうをおねがいします'},
+    ],
+    7:[
+      {prompt:'「りんごを食べた」と言ってみて',  speak:'りんごをたべた',        hint:'りんごをたべた'},
+      {prompt:'「もう一度言ってください」と言ってみて', speak:'もういちどいってください', hint:'もういちどいってください'},
+      {prompt:'「病院に行きたい」と言ってみて',  speak:'びょういんにいきたい',   hint:'びょういんにいきたい'},
+      {prompt:'「ゆっくり話してください」と言ってみて', speak:'ゆっくりはなしてください', hint:'ゆっくりはなしてください'},
+      {prompt:'「道に迷いました」と言ってみて',  speak:'みちにまよいました',     hint:'みちにまよいました'},
+    ],
+    9:[
+      {prompt:'「予約をしたいのですが」と言ってみて', speak:'よやくをしたいのですが',    hint:'よやくをしたいのですが'},
+      {prompt:'「写真を撮ってもいいですか」と言ってみて', speak:'しゃしんをとってもいいですか', hint:'しゃしんをとってもいいですか'},
+      {prompt:'「手伝っていただけますか」と言ってみて', speak:'てつだっていただけますか', hint:'てつだっていただけますか'},
+      {prompt:'「どのくらいかかりますか」と言ってみて', speak:'どのくらいかかりますか', hint:'どのくらいかかりますか'},
+      {prompt:'「少し日本語がわかります」と言ってみて', speak:'すこしにほんごがわかります', hint:'すこしにほんごがわかります'},
+    ],
+  },
+  en: {
+    1:[
+      {prompt:'「こんにちは」を英語で言ってみて',     speak:'Hello',         hint:'Hello'},
+      {prompt:'「ありがとう」を英語で',               speak:'Thank you',     hint:'Thank you'},
+      {prompt:'「1」を英語で',                       speak:'one',           hint:'one'},
+      {prompt:'「はい」を英語で',                    speak:'Yes',           hint:'Yes'},
+      {prompt:'「水」を英語で',                      speak:'water',         hint:'water'},
+    ],
+    3:[
+      {prompt:'「これをください」を英語で言ってみて',  speak:'I would like this',  hint:'I would like this'},
+      {prompt:'「いくらですか」を英語で',             speak:'How much is it',     hint:'How much is it'},
+      {prompt:'「右に曲がってください」を英語で',      speak:'Please turn right',  hint:'Please turn right'},
+      {prompt:'「駅はどこですか」を英語で',           speak:'Where is the station', hint:'Where is the station'},
+      {prompt:'「おいしいです」を英語で',             speak:'This is delicious',   hint:'This is delicious'},
+    ],
+    5:[
+      {prompt:'「道に迷いました」を英語で言ってみて',  speak:'I am lost',          hint:'I am lost'},
+      {prompt:'「もう一度言ってください」を英語で',    speak:'Please say that again', hint:'Please say that again'},
+      {prompt:'「ゆっくり話してください」を英語で',    speak:'Please speak slowly', hint:'Please speak slowly'},
+      {prompt:'「お会計をお願いします」を英語で',      speak:'The check please',    hint:'The check please'},
+      {prompt:'「気分が悪いです」を英語で言ってみて',  speak:"I don't feel well",  hint:"I don't feel well"},
+    ],
+    7:[
+      {prompt:'「予約したいのですが」を英語で言ってみて', speak:'I would like to make a reservation', hint:'I would like to make a reservation'},
+      {prompt:'「写真を撮ってもいいですか」を英語で',   speak:'May I take a photo',     hint:'May I take a photo'},
+      {prompt:'「どのくらいかかりますか」を英語で',     speak:'How long does it take',  hint:'How long does it take'},
+      {prompt:'「助けてください」を英語で',            speak:'Could you help me please', hint:'Could you help me please'},
+      {prompt:'「何時に開きますか」を英語で言ってみて', speak:'What time does it open',  hint:'What time does it open'},
+    ],
+    9:[
+      {prompt:'「少し英語がわかります」を英語で言ってみて', speak:'I understand a little English', hint:'I understand a little English'},
+      {prompt:'「日本語を話せますか」を英語で',         speak:'Do you speak Japanese',  hint:'Do you speak Japanese'},
+      {prompt:'「お話できてよかったです」を英語で',     speak:'Nice talking to you',    hint:'Nice talking to you'},
+      {prompt:'「地図で見せてください」を英語で',       speak:'Show me on the map',     hint:'Show me on the map'},
+      {prompt:'「一緒に行きましょう」を英語で言ってみて', speak:"Let's go together",    hint:"Let's go together"},
+    ],
+  }
+};
+
+
+// ========================
+// プレイスメント：AIとの自動会話テスト
+// ========================
+let plConv = {
+  isActive: false,
+  history: [],
+  scores: [],       // 各ターンの評価スコア
+  turnCount: 0,
+  maxTurns: 6,
+  rec: null,
+  wt: null,
+  isRec: false,
+  isTTS: false,
+  silenceTimer: null,
+};
+
+function startPlacementQuiz(){
+  // レベル未選択の場合はLv.3をデフォルトとして使用
+  if(!selectedPlacementLv){
+    selectedPlacementLv = PLACEMENT_OPTIONS[1]; // Lv.3
+  }
+  const isJa = ST.uiLang==='ja';
+  plConv.isActive=true; plConv.history=[]; plConv.scores=[];
+  plConv.turnCount=0; plConv.isRec=false;
+
+  g('pl-phase1').style.display='none';
+  g('pl-phase2').style.display='flex';
+  g('pl-phase3').style.display='none';
+  setT('pl-quiz-title', isJa?'会話テスト':'Conversation Test');
+  setT('pl-quiz-sub',   isJa?'AIと短い会話をします。ボタンは不要です。話しかけてください。':'Have a short conversation with AI. No buttons needed — just speak.');
+
+  g('pl-quiz-bar').style.width='0%';
+  const card = g('pl-quiz-card'); card.innerHTML='';
+
+  // チャットエリア生成
+  card.innerHTML=`
+    <div id="pl-chat" style="width:100%;display:flex;flex-direction:column;gap:8px;min-height:160px;max-height:240px;overflow-y:auto;padding:4px 0;scrollbar-width:none"></div>
+    <div id="pl-status" style="font-size:13px;color:rgba(255,255,255,0.7);text-align:center;margin-top:8px;min-height:20px"></div>
+    <div id="pl-wave-wrap" style="display:flex;justify-content:center;gap:3px;height:22px;margin-top:6px;opacity:0">
+      <div id="plb1" style="width:3px;border-radius:2px;background:white;height:8px;transition:height 0.08s"></div>
+      <div id="plb2" style="width:3px;border-radius:2px;background:white;height:14px;transition:height 0.08s"></div>
+      <div id="plb3" style="width:3px;border-radius:2px;background:white;height:18px;transition:height 0.08s"></div>
+      <div id="plb4" style="width:3px;border-radius:2px;background:white;height:10px;transition:height 0.08s"></div>
+      <div id="plb5" style="width:3px;border-radius:2px;background:white;height:16px;transition:height 0.08s"></div>
+    </div>`;
+
+  // マイク事前許可してからAI開始
+  requestMicOnce().then(()=>plConvAITurn('__start__'));
+}
+
+function plAddBubble(role, text){
+  const chat = g('pl-chat'); if(!chat) return;
+  const d = document.createElement('div');
+  if(role==='ai'){
+    d.style.cssText='background:rgba(255,255,255,0.18);border-radius:12px 12px 12px 3px;padding:10px 14px;font-size:14px;color:#fff;line-height:1.5;align-self:flex-start;max-width:88%';
+  } else if(role==='user'){
+    d.style.cssText='background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);border-radius:12px 12px 3px 12px;padding:10px 14px;font-size:14px;color:rgba(255,255,255,0.9);line-height:1.5;align-self:flex-end;max-width:88%';
+  } else {
+    d.style.cssText='background:rgba(255,255,255,0.08);border-radius:8px;padding:6px 10px;font-size:11px;color:rgba(255,255,255,0.6);text-align:center;width:100%';
+  }
+  d.textContent=text;
+  chat.appendChild(d);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function plTyping(show){
+  const s=g('pl-status');
+  if(!s) return;
+  s.textContent=show?(ST.uiLang==='ja'?'AIが考えています…':'AI is thinking...'):'';
+}
+
+async function plConvAITurn(userInput){
+  const isJa=ST.uiLang==='ja';
+  const lv=selectedPlacementLv;
+  plTyping(true);
+
+  const systemPrompt=`You are a friendly ${ST.learnLang==='en'?'English':'Japanese'} language tutor conducting a placement test through natural conversation.
+The student selected "${isJa?lv.ja.label:lv.en.label}" (Level ${lv.lv}).
+Your job: have a natural flowing conversation of ${plConv.maxTurns} turns to assess their actual level.
+
+Rules:
+- Ask ONE simple question per turn, conversationally
+- Topics: greetings, daily life, preferences, simple descriptions
+- Start simple (How are you? What's your name?) and gradually increase complexity
+- On turn ${plConv.maxTurns}: wrap up naturally ("Nice talking with you!")
+- NEVER explain grammar during the conversation itself
+- Keep your response to 1-2 short sentences
+
+After the conversation ends (turn ${plConv.maxTurns}), output ONLY this JSON:
+{"level": 1-10, "reason": "brief reason in Japanese", "score": 0-100}
+
+Current turn: ${plConv.turnCount+1} of ${plConv.maxTurns}
+History: ${JSON.stringify(plConv.history.slice(-6))}
+User just said: "${userInput==='__start__'?'(not started yet)':userInput}"`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,
+        messages:[{role:'user',content:systemPrompt}]})
+    });
+    const data=await res.json();
+    plTyping(false);
+    const text=(data.content?.find(x=>x.type==='text')?.text||'').trim();
+
+    // JSON判定（最終ターン）
+    if(text.startsWith('{')){
+      try{
+        const result=JSON.parse(text);
+        plConv.isActive=false;
+        setTimeout(()=>showPlacementResult(result),800);
+        return;
+      }catch(e){}
+    }
+
+    // 通常の会話ターン
+    plAddBubble('ai',text);
+    plConv.history.push({role:'assistant',content:text});
+    plConv.turnCount++;
+
+    // プログレスバー更新
+    const pct=Math.round(plConv.turnCount/plConv.maxTurns*100);
+    const bar=g('pl-quiz-bar');if(bar)bar.style.width=pct+'%';
+
+    // TTS再生後に自動でマイクON
+    plSpeakThenListen(text);
+
+  }catch(err){
+    plTyping(false);
+    plAddBubble('hint', isJa?'接続エラー。インターネットを確認してください。':'Connection error. Check your internet.');
+  }
+}
+
+function plSpeakThenListen(text){
+  if(!('speechSynthesis' in window)){plStartMic();return;}
+  window.speechSynthesis.cancel();
+  loadVoices();
+  const utt=new SpeechSynthesisUtterance(text);
+  utt.lang=pack().ttsLang; utt.rate=0.9;
+  if(Q.voice)utt.voice=Q.voice;
+  utt.onend=()=>{
+    plConv.isTTS=false;
+    if(plConv.isActive) plStartMic();
+  };
+  utt.onerror=()=>{plConv.isTTS=false;if(plConv.isActive)plStartMic();};
+  plConv.isTTS=true;
+  window.speechSynthesis.speak(utt);
+}
+
+function plStartMic(){
+  if(!plConv.isActive) return;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR) return;
+  const isJa=ST.uiLang==='ja';
+  if(plConv.rec) try{plConv.rec.stop();}catch(e){}
+  plConv.rec=new SR();
+  plConv.rec.lang=pack().sttLang;
+  plConv.rec.interimResults=true;
+  plConv.rec.continuous=false;
+  plConv.rec.maxAlternatives=1;
+
+  plConv.rec.onstart=()=>{
+    plConv.isRec=true;
+    const ww=g('pl-wave-wrap');if(ww)ww.style.opacity='1';
+    setT('pl-status',isJa?'🎤 話してください…':'🎤 Your turn — speak now...');
+    plConv.wt=setInterval(()=>{
+      for(let i=1;i<=5;i++){const b=g('plb'+i);if(b)b.style.height=(6+Math.random()*16)+'px';}
+    },90);
+    // 無音タイムアウト（5秒）
+    clearTimeout(plConv.silenceTimer);
+    plConv.silenceTimer=setTimeout(()=>{
+      if(plConv.isRec){
+        plConv.rec?.stop();
+        setT('pl-status',isJa?'聞こえませんでした。もう一度話してください。':'Could not hear you. Please speak again.');
+        setTimeout(()=>{if(plConv.isActive)plStartMic();},2000);
+      }
+    },5000);
+  };
+
+  plConv.rec.onresult=e=>{
+    clearTimeout(plConv.silenceTimer);
+    let interim='',final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)final+=e.results[i][0].transcript;
+      else interim+=e.results[i][0].transcript;
+    }
+    setT('pl-status',interim||final||'...');
+    if(final){
+      plConv.isRec=false;
+      plStopMicClean();
+      plAddBubble('user',final.trim());
+      plConv.history.push({role:'user',content:final.trim()});
+      if(plConv.turnCount>=plConv.maxTurns){
+        plConvAITurn(final.trim()); // 最終評価
+      } else {
+        plConvAITurn(final.trim());
+      }
+    }
+  };
+
+  plConv.rec.onerror=e=>{
+    plStopMicClean();
+    if(e.error==='no-speech'&&plConv.isActive){
+      setTimeout(()=>plStartMic(),1500);
+    }
+  };
+  plConv.rec.onend=()=>{
+    if(plConv.isRec){plStopMicClean();}
+  };
+  try{plConv.rec.start();}catch(e){}
+}
+
+function plStopMicClean(){
+  clearInterval(plConv.wt);plConv.wt=null;plConv.isRec=false;
+  clearTimeout(plConv.silenceTimer);
+  const ww=g('pl-wave-wrap');if(ww)ww.style.opacity='0';
+}
+
+function showPlacementResult(result){
+  const isJa=ST.uiLang==='ja';
+  // result: {level:1-10, reason:'...', score:0-100} または従来のpct
+  let recommendedLv, reason, pct;
+  if(result&&result.level){
+    // AIが判定したレベル
+    const idx=PLACEMENT_OPTIONS.findIndex(o=>o.lv>=result.level);
+    recommendedLv=PLACEMENT_OPTIONS[Math.max(0,idx)]||PLACEMENT_OPTIONS[PLACEMENT_OPTIONS.length-1];
+    reason=result.reason||'';
+    pct=result.score||70;
+  } else {
+    // 旧形式（フォールバック）
+    pct=typeof result==='number'?result:70;
+    const sl=selectedPlacementLv;
+    const idx=PLACEMENT_OPTIONS.findIndex(o=>o.lv===sl.lv);
+    recommendedLv=pct>=75?PLACEMENT_OPTIONS[Math.min(idx+1,PLACEMENT_OPTIONS.length-1)]:
+                  pct>=50?sl:PLACEMENT_OPTIONS[Math.max(idx-1,0)];
+    reason='';
+  }
+
+  const sl=SCORE_LEVELS[recommendedLv.lv-1];
+  const info=isJa?recommendedLv.ja:recommendedLv.en;
+
+  g('pl-phase2').style.display='none';
+  g('pl-phase3').style.display='flex';
+
+  const emoji=pct>=75?'🎉':pct>=50?'👍':'💪';
+  setT('pl-result-emoji',emoji);
+  setT('pl-result-title',isJa?'会話テスト完了！':'Conversation test done!');
+  const descText=reason||(pct>=75
+    ?(isJa?`会話がスムーズでした。Lv.${recommendedLv.lv}から始めましょう。`:`Conversation was smooth. Start from Lv.${recommendedLv.lv}.`)
+    :pct>=50
+    ?(isJa?`Lv.${recommendedLv.lv}が適切です。`:`Lv.${recommendedLv.lv} is a good fit.`)
+    :(isJa?`Lv.${recommendedLv.lv}から丁寧に練習しましょう。`:`Let's build from Lv.${recommendedLv.lv}.`));
+  setT('pl-result-level',`Lv.${recommendedLv.lv} — ${info.label}`);
+  setT('pl-result-desc', descText);
+  setT('pl-result-score', pct+'%');
+  setT('pl-result-score-lbl', isJa?'会話スコア':'Conv. Score');
+  setT('pl-result-recommended',`Lv.${recommendedLv.lv}`);
+  setT('pl-result-rec-lbl', isJa?'推奨レベル':'Recommended');
+  g('pl-result-ava').innerHTML=sl.svg;
+  const btn=g('pl-result-btn');
+  btn.textContent=isJa?`Lv.${recommendedLv.lv}から始める →`:`Start from Lv.${recommendedLv.lv} →`;
+  btn._opt=recommendedLv;
+  setT('pl-result-skip',isJa?'最初から始める（Lv.1）':'Start from the beginning (Lv.1)');
+}
+
+function applyPlacementResult(){
+  const btn=g('pl-result-btn');
+  const opt=btn?._opt||selectedPlacementLv;
+  if(!opt){buildMap();showScreen('screen-map');return;}
+  const targetScore=SCORE_LEVELS[opt.lv-1].pts[0];
+  if(ST.score<targetScore){ST.score=targetScore;ST.xp=targetScore;}
+  const p=pack();let lvCount=0;
+  for(const ch of p.chapters){
+    for(const lv of ch.levels){
+      if(lvCount<opt.stageIdx){if(!ST.stars[lv.id])ST.stars[lv.id]=1;}
+      lvCount++;
+    }
+  }
+  saveST();
+  buildMap();
+  showScreen('screen-map');
+  updateNavLabels();
+  // マップ画面にスクロールして目的レベルを強調表示
+  setTimeout(()=>{
+    const cur=document.querySelector('.pip-current');
+    if(cur)cur.scrollIntoView({behavior:'smooth',block:'center'});
+  },300);
+}
+
+function confirmPlacement(){
+  // 後方互換用（直接確定）
+  applyPlacementResult();
+}
+
+function showPlacementFromMap(){
+  selectedPlacementLv=null;
+  buildPlacementScreen();
+  showScreen('screen-placement');
+}
+function skipPlacement(){
+  // プレイスメントをスキップしてそのままLv.1から開始
+  buildMap();
+  showScreen('screen-map');
+  updateNavLabels();
+}
+
+// ========================
+// AI弱点分析
+// ========================
+async function runAIAnalysis(){
+  const isJa=ST.uiLang==='ja';
+  const weakItems=getWeakItems(ST.learnLang);
+  const btn=g('ai-analyze-btn');
+
+  // 最低限のデータチェック
+  if(weakItems.length===0 && Object.keys(ST.stars).length===0){
+    alert2(isJa?'まず練習を始めてください。データが集まると分析できます。':'Please practice first. Analysis becomes available as data accumulates.');
+    return;
+  }
+
+  btn.disabled=true;
+  btn.textContent=isJa?'分析中...':'Analyzing...';
+  g('ai-result').style.display='block';
+
+  // ローディング表示
+  const body=g('ai-result-body');
+  body.innerHTML=`<div class="ai-loading">
+    <div class="ai-loading-dot"></div>
+    <div class="ai-loading-dot"></div>
+    <div class="ai-loading-dot"></div>
+    <span>${isJa?'AIが分析しています...':'AI is analyzing...'}</span>
+  </div>`;
+
+  // 練習データをまとめる
+  const sl=getCurrentScoreLevel();
+  const totalSessions=Object.keys(ST.stars).length;
+  const weakSummary=weakItems.slice(0,20).map(w=>`「${w.word}」(${w.missCount}回ミス)`).join('、');
+  const completedLevels=Object.entries(ST.stars).map(([id,s])=>`Lv${id}(⭐${s})`).join(', ');
+  const learnLangName=ST.learnLang==='ja'?'日本語':'英語';
+
+  const prompt=isJa?
+    `あなたは言語学習の専門家です。以下のユーザーの学習データを分析して、日本語で具体的なアドバイスをください。
+
+【ユーザー情報】
+- 学習言語: ${learnLangName}
+- 現在レベル: Lv.${sl.lv} ${sl.label}（${sl.age}相当）
+- 総合スコア: ${ST.score}/1000点
+- 完了したレベル数: ${totalSessions}レベル
+- 完了レベル詳細: ${completedLevels||'なし'}
+
+【苦手単語トップ20】
+${weakSummary||'まだデータなし'}
+
+以下の3点を簡潔にまとめてください（合計200字以内）：
+1. 現在の傾向・弱点（1〜2文）
+2. 最も練習すべき具体的な単語や音のパターン（箇条書き3つ）
+3. 次のステップのアドバイス（1文）`
+    :
+    `You are a language learning expert. Analyze the following learning data and provide specific advice in English.
+
+[User Info]
+- Learning: ${learnLangName}
+- Current level: Lv.${sl.lv} ${sl.labelEn} (equivalent to ${sl.age})
+- Total score: ${ST.score}/1000
+- Completed levels: ${totalSessions}
+- Completed: ${completedLevels||'none'}
+
+[Top 20 Difficult Words]
+${weakSummary||'No data yet'}
+
+Please summarize in 3 points (under 150 words total):
+1. Current pattern / weakness (1-2 sentences)
+2. Specific words or sound patterns to practice most (3 bullet points)
+3. Next step advice (1 sentence)`;
+
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content?.find(c=>c.type==='text')?.text||
+      (isJa?'分析結果を取得できませんでした。':'Could not retrieve analysis.');
+
+    body.innerHTML='';
+    const textDiv=document.createElement('div');textDiv.className='ai-text';textDiv.textContent=text;
+    body.appendChild(textDiv);
+
+    // 苦手練習ボタン（苦手単語がある場合）
+    if(weakItems.length>0){
+      const practiceBtn=document.createElement('button');
+      practiceBtn.className='ai-practice-btn';
+      practiceBtn.textContent=isJa?`🎤 AIが特定した弱点を練習する（${Math.min(weakItems.length,10)}語）`:`🎤 Practice AI-identified weak points (${Math.min(weakItems.length,10)} words)`;
+      practiceBtn.onclick=()=>startWeakPractice();
+      body.appendChild(practiceBtn);
+    }
+  } catch(err){
+    body.innerHTML=`<div style="color:var(--red);font-size:13px">${isJa?'分析エラーが発生しました。インターネット接続を確認してください。':'Analysis failed. Please check your internet connection.'}</div>`;
+  } finally {
+    btn.disabled=false;
+    btn.textContent=isJa?'🔍 再分析する':'🔍 Re-analyze';
+  }
+}
+
+// ========================
+// 苦手リスト管理
+// ========================
+function weakKey(word, learnLang){ return learnLang+':'+word; }
+
+function addToWeak(item, learnLang, auto=false){
+  if(!ST.weak) ST.weak={};
+  const key=weakKey(item.w||item.word, learnLang);
+  if(ST.weak[key]){
+    ST.weak[key].missCount=(ST.weak[key].missCount||0)+(auto?1:0);
+  } else {
+    ST.weak[key]={
+      word: item.w||item.word,
+      sub:  item.sub||item.d||'',
+      lang: learnLang,
+      missCount: auto?1:0,
+      addedAt: Date.now(),
+      manual: !auto,
+    };
+  }
+  saveST();
+}
+
+function removeFromWeak(key){
+  if(ST.weak) delete ST.weak[key];
+  saveST();
+}
+
+function clearWeakList(){
+  const isJa=ST.uiLang==='ja';
+  if(!confirm(isJa?'苦手リストをすべて削除しますか？':'Clear all weak words?')) return;
+  ST.weak={};saveST();buildWeakScreen();
+}
+
+function isInWeak(word){ return !!(ST.weak&&ST.weak[weakKey(word,ST.learnLang)]); }
+
+function getWeakItems(learnLang){
+  if(!ST.weak) return [];
+  return Object.values(ST.weak)
+    .filter(w=>w.lang===learnLang)
+    .sort((a,b)=>(b.missCount-a.missCount)||(b.addedAt-a.addedAt));
+}
+
+// ========================
+// 苦手リスト画面
+// ========================
+function buildWeakScreen(){
+  const isJa=ST.uiLang==='ja';
+  setT('weak-header-title', isJa?'🔖 苦手リスト':'🔖 Review List');
+  setT('weak-header-sub',   isJa?'間違えた単語・ブックマークした単語を練習しよう':'Practice words you found difficult');
+  setT('weak-sec-title',    isJa?'練習する単語':'Words to Practice');
+  setT('weak-empty-txt',    isJa?'まだ苦手リストに単語がありません。\n練習中に間違えた単語や\n🔖ボタンで追加できます。':'No words in your review list yet.\nWords you miss or bookmark will appear here.');
+
+  const items=getWeakItems(ST.learnLang);
+  const list=g('weak-list');
+  const empty=g('weak-empty');
+  list.innerHTML='';
+
+  if(items.length===0){
+    list.style.display='none';
+    empty.style.display='block';
+  } else {
+    list.style.display='flex';
+    empty.style.display='none';
+    items.forEach(item=>{
+      const key=weakKey(item.word, item.lang);
+      const div=document.createElement('div');div.className='weak-item';
+      div.innerHTML=`
+        <div style="flex:1">
+          <div class="weak-item-word">${item.word}</div>
+          <div class="weak-item-sub">${item.sub}</div>
+        </div>
+        <div class="weak-item-meta">
+          ${item.missCount>0?`<span class="weak-item-count">❌ ${item.missCount}回</span>`:'<span class="weak-item-count" style="color:var(--text3)">🔖</span>'}
+          <span class="weak-item-lang">${item.lang==='ja'?'日本語':'English'}</span>
+        </div>
+        <button class="weak-item-del" onclick="removeFromWeak('${key}');buildWeakScreen()" title="削除">✕</button>`;
+      list.appendChild(div);
+    });
+  }
+
+  const count=Math.min(items.length,10);
+  const startBtn=g('weak-start-btn');
+  startBtn.textContent=isJa?`🎤 ${count}問練習スタート`:`🎤 Start ${count}-Word Practice`;
+  startBtn.disabled=items.length===0;
+
+  const clearBtn=g('weak-clear-btn');
+  clearBtn.textContent=isJa?'リストをクリア':'Clear list';
+  clearBtn.style.display=items.length>0?'block':'none';
+}
+
+function startWeakPractice(){
+  const items=getWeakItems(ST.learnLang).slice(0,10);
+  if(items.length===0) return;
+  const isJa=ST.uiLang==='ja';
+
+  // 苦手練習用の疑似チャプター・レベルを作成
+  const fakeLv={
+    id:'weak', name:isJa?'苦手練習':'Review',
+    type:'speak', passRate:0.75,
+    desc:isJa?`苦手な${items.length}単語を練習中`:`Practicing ${items.length} difficult words`,
+    items: items.map(i=>({w:i.word, d:i.word, sub:i.sub||''})),
+    isWeak:true,
+  };
+  const fakeCh={
+    name:isJa?'🔖 苦手練習':'🔖 Review Practice',
+    scene:'greeting',
+    story_pass:isJa?'苦手単語を練習できました！続けて上達しよう。':'Great review session! Keep it up.',
+    story_fail:isJa?'繰り返し練習することで必ず上達します。':'Repeated practice will get you there.',
+  };
+
+  Q.ch=fakeCh;Q.lv=fakeLv;Q.qi=0;Q.correct=0;Q.hearts=3;Q.answers=[];
+  Q.isRec=false;Q.rec=null;Q.wt=null;Q.isTTS=false;
+  const pool=[...fakeLv.items];
+  for(let i=pool.length-1;i>0;i--){const j=~~(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  Q.qs=pool.slice(0,10);
+
+  document.getElementById('p-title').textContent=fakeCh.name;
+  document.getElementById('p-sub').textContent=fakeLv.desc;
+  document.getElementById('btn-back-label').textContent=isJa?'苦手':'Review';
+
+  // ヘッダー・バーをオレンジ色に
+  g('screen-practice').querySelector('.prac-header')?.classList.add('weak-mode');
+  g('q-bar-fill')?.classList.add('weak-mode');
+
+  showScreen('screen-practice');
+
+  requestMicOnce();  // 苦手練習でもグローバル許可
+  renderQ();
+}
+
+// ========================
+// ブックマークボタンを練習カードに追加
+// ========================
+function addBookmarkBtn(card, word){
+  const isMarked=isInWeak(word);
+  const btn=document.createElement('button');
+  btn.className='bookmark-btn'+(isMarked?' marked':'');
+  btn.id='bookmark-btn';
+  btn.title=ST.uiLang==='ja'?'苦手リストに追加':'Add to review list';
+  btn.textContent=isMarked?'🔖':'🔖';
+  btn.style.opacity=isMarked?'1':'0.4';
+  btn.onclick=()=>{
+    const q=Q.qs[Q.qi];
+    if(isInWeak(word)){
+      removeFromWeak(weakKey(word,ST.learnLang));
+      btn.style.opacity='0.4';btn.classList.remove('marked');
+    } else {
+      addToWeak({w:word,sub:q?.sub||q?.d||''},ST.learnLang,false);
+      btn.style.opacity='1';btn.classList.add('marked');
+    }
+  };
+  card.appendChild(btn);
+}
+const SCORE_LEVELS = [
+  {lv:1,label:'新生児期',  labelEn:'Newborn',    age:'0〜6ヶ月',  pts:[0,100],   color:'#b8d8ee',
+   desc:'音・母音・自動語の段階',     descEn:'Sounds, vowels, automatic speech',
+   en:{cefr:'Pre-A1',toeic:'〜220'},  ja:{jlpt:'N5以下'}, rehab:{bda:'重度',wesab:'1-2'},
+   svg:buildAva(0)},
+  {lv:2,label:'乳児後期',  labelEn:'Infant',     age:'6〜12ヶ月', pts:[100,200],  color:'#a8d4b5',
+   desc:'1〜2音節の単語・指さし',      descEn:'1-2 syllable words, pointing',
+   en:{cefr:'A1',toeic:'220〜470'},   ja:{jlpt:'N5'},     rehab:{bda:'重〜中度',wesab:'2-3'},
+   svg:buildAva(1)},
+  {lv:3,label:'幼児期',    labelEn:'Toddler',    age:'1〜2歳',    pts:[200,300],  color:'#f0d080',
+   desc:'2〜3語文・語彙50〜200語',     descEn:'2-3 word phrases, 50-200 vocab',
+   en:{cefr:'A1〜A2',toeic:'470〜550'},ja:{jlpt:'N5〜N4'},rehab:{bda:'中度',wesab:'3-4'},
+   svg:buildAva(2)},
+  {lv:4,label:'幼稚園期',  labelEn:'Pre-school', age:'2〜4歳',    pts:[300,400],  color:'#f0a060',
+   desc:'助詞・短文・質問応答',         descEn:'Particles, short sentences',
+   en:{cefr:'A2',toeic:'550〜650'},   ja:{jlpt:'N4'},     rehab:{bda:'中度',wesab:'4-5'},
+   svg:buildAva(3)},
+  {lv:5,label:'小学校低学年',labelEn:'Primary',  age:'5〜7歳',    pts:[400,500],  color:'#e08050',
+   desc:'複文・日常会話・語彙2000語+', descEn:'Complex sentences, daily conversation',
+   en:{cefr:'B1',toeic:'650〜730'},   ja:{jlpt:'N3'},     rehab:{bda:'軽〜中度',wesab:'5-6'},
+   svg:buildAva(4)},
+  {lv:6,label:'小学校高学年',labelEn:'Upper Primary',age:'8〜10歳',pts:[500,600], color:'#c86050',
+   desc:'説明・語彙5000語+',           descEn:'Can explain things, 5000+ vocab',
+   en:{cefr:'B1〜B2',toeic:'730〜860'},ja:{jlpt:'N2〜N3'},rehab:{bda:'軽度',wesab:'6-7'},
+   svg:buildAva(5)},
+  {lv:7,label:'中学生',    labelEn:'Middle School',age:'11〜14歳',pts:[600,700],  color:'#9060a0',
+   desc:'抽象概念・ニュース理解',        descEn:'Abstract concepts, news comprehension',
+   en:{cefr:'B2',toeic:'860〜930'},   ja:{jlpt:'N2'},     rehab:{bda:'正常相当',wesab:'7-8'},
+   svg:buildAva(6)},
+  {lv:8,label:'高校生',    labelEn:'High School', age:'15〜18歳', pts:[700,800],  color:'#6060b0',
+   desc:'流暢・幅広い話題',             descEn:'Fluent across wide range of topics',
+   en:{cefr:'C1',toeic:'930〜975'},   ja:{jlpt:'N1'},     rehab:{bda:'正常範囲',wesab:'8-9'},
+   svg:buildAva(7)},
+  {lv:9,label:'大学生',    labelEn:'University',  age:'18〜22歳', pts:[800,900],  color:'#4070a0',
+   desc:'専門語彙・学術的議論',          descEn:'Academic & professional discourse',
+   en:{cefr:'C1〜C2',toeic:'975〜990'},ja:{jlpt:'N1上位'},rehab:{bda:'正常',wesab:'9'},
+   svg:buildAva(8)},
+  {lv:10,label:'ネイティブ',labelEn:'Native',     age:'成人',      pts:[900,1000], color:'#206880',
+   desc:'母語話者レベル・文化理解',       descEn:'Native-level fluency & cultural nuance',
+   en:{cefr:'C2',toeic:'990'},        ja:{jlpt:'N1満点'}, rehab:{bda:'正常',wesab:'10'},
+   svg:buildAva(9)},
+];
+
+function buildAva(stage){
+  const bodyC=['#ffcba4','#ffba90','#f5a878','#e89060','#d88050','#c87040','#b86030','#a85030','#984828','#885020'];
+  const hairC=['#f8e880','#f0d060','#e0b830','#c89010','#a06808','#806008','#604808','#403010','#202010','#101008'];
+  const clothC=['#b8d8ee','#a8d4b5','#f0d080','#f0a060','#e08050','#c86050','#9060a0','#6060b0','#4070a0','#206880'];
+  const hs=[26,28,30,32,36,40,44,48,50,52];
+  const hr=[8,8,8,9,9,10,10,11,11,12];
+  const w=44,th=56,h=hs[stage],r=hr[stage],bw=10+stage*1.5|0;
+  const by=th-h-6,hy=by-r;
+  let s=`<svg viewBox="0 0 ${w} ${th}" fill="none">`;
+  s+=`<ellipse cx="${w/2}" cy="${th-3}" rx="${bw*0.75|0}" ry="2.5" fill="rgba(0,0,0,0.08)"/>`;
+  s+=`<rect x="${w/2-bw/2}" y="${by}" width="${bw}" height="${h}" rx="${bw*0.3|0}" fill="${clothC[stage]}"/>`;
+  if(stage>=2){
+    s+=`<line x1="${w/2-bw/2}" y1="${by+3}" x2="${w/2-bw/2-5}" y2="${by+h*0.4}" stroke="${clothC[stage]}" stroke-width="3.5" stroke-linecap="round"/>`;
+    s+=`<line x1="${w/2+bw/2}" y1="${by+3}" x2="${w/2+bw/2+5}" y2="${by+h*0.4}" stroke="${clothC[stage]}" stroke-width="3.5" stroke-linecap="round"/>`;
+  }
+  if(stage>=1){
+    s+=`<line x1="${w/2-3}" y1="${by+h}" x2="${w/2-4}" y2="${th-4}" stroke="${bodyC[stage]}" stroke-width="4" stroke-linecap="round"/>`;
+    s+=`<line x1="${w/2+3}" y1="${by+h}" x2="${w/2+4}" y2="${th-4}" stroke="${bodyC[stage]}" stroke-width="4" stroke-linecap="round"/>`;
+  }
+  s+=`<circle cx="${w/2}" cy="${hy}" r="${r}" fill="${bodyC[stage]}"/>`;
+  if(stage<=1) s+=`<path d="M${w/2-r} ${hy-3} Q${w/2} ${hy-r-4} ${w/2+r} ${hy-3}" fill="${hairC[stage]}"/>`;
+  else s+=`<path d="M${w/2-r} ${hy-1} Q${w/2} ${hy-r-5} ${w/2+r} ${hy-1}" fill="${hairC[stage]}"/>`;
+  const ey=hy-1,ex1=w/2-r*0.38,ex2=w/2+r*0.38;
+  s+=`<circle cx="${ex1}" cy="${ey}" r="1.4" fill="#2a2018"/>`;
+  s+=`<circle cx="${ex2}" cy="${ey}" r="1.4" fill="#2a2018"/>`;
+  const my=hy+r*0.32;
+  s+=`<path d="M${w/2-2.5} ${my} Q${w/2} ${my+2} ${w/2+2.5} ${my}" stroke="#b06040" stroke-width="1.2" fill="none" stroke-linecap="round"/>`;
+  if(stage>=6){
+    s+=`<circle cx="${ex1}" cy="${ey}" r="2.8" fill="none" stroke="rgba(80,60,40,0.35)" stroke-width="0.8"/>`;
+    s+=`<circle cx="${ex2}" cy="${ey}" r="2.8" fill="none" stroke="rgba(80,60,40,0.35)" stroke-width="0.8"/>`;
+  }
+  s+=`</svg>`;
+  return s;
+}
+
+function getCurrentScoreLevel(){
+  return SCORE_LEVELS.find(l=>ST.score>=l.pts[0]&&ST.score<l.pts[1])||SCORE_LEVELS[9];
+}
+
+// ========================
+// PROFILE SCREEN
+// ========================
+function buildProfile(){
+  const isJa=ST.uiLang==='ja';
+  const sl=getCurrentScoreLevel();
+
+  // ヘッダー
+  setT('prof-title', isJa?'📊 マイレベル':'📊 My Level');
+  setT('prof-sub',   isJa?'学習の記録と成長を確認しよう':'Track your learning progress');
+  setT('prof-score-title', isJa?'総合スコア':'Total Score');
+  setT('prof-ava-title',   isJa?'言語発達レベル — 今どの段階？':'Language Development Level');
+  setT('prof-std-title',   isJa?'標準指標との対応':'Standard Benchmark Equivalents');
+  setT('prof-seg-note',    isJa?'各色 = 1レベル（100点区間）':'Each color = 1 level (100pt range)');
+
+  // バナー
+  document.getElementById('prof-ava').innerHTML=sl.svg;
+  const lvName=`Lv.${sl.lv} — ${isJa?sl.label:sl.labelEn}（${sl.age}相当）`;
+  setT('prof-lv-name', lvName);
+  setT('prof-lv-desc', isJa?sl.desc:sl.descEn);
+  setT('prof-pts-txt',  isJa?`現在 ${ST.score} 点 / 1000点満点`:`${ST.score} / 1000 points`);
+  const toNext=sl.pts[1]-ST.score;
+  setT('prof-next-badge', isJa?`次のレベルまで あと ${toNext}点`:`${toNext}pts to next level`);
+
+  // スコアカード
+  setT('prof-score-num', ST.score);
+  setT('prof-score-label', `Lv.${sl.lv} ${isJa?sl.label:sl.labelEn}（${sl.age}相当）`);
+  const markers=document.getElementById('prof-markers');markers.innerHTML='';
+  [0,100,200,300,400,500,600,700,800,900,1000].forEach(n=>{
+    const m=document.createElement('span');m.className='mega-marker';m.textContent=n;markers.appendChild(m);
+  });
+  document.getElementById('prof-mega-fill').style.width=(ST.score/10)+'%';
+  const segs=document.getElementById('prof-segs');segs.innerHTML='';
+  SCORE_LEVELS.forEach(l=>{
+    const d=document.createElement('div');d.className='seg';
+    d.style.background=ST.score>=l.pts[1]?l.color:ST.score>=l.pts[0]?l.color+'aa':l.color+'28';
+    segs.appendChild(d);
+  });
+
+  // アバタートラック
+  const track=document.getElementById('prof-ava-track');track.innerHTML='';
+  SCORE_LEVELS.forEach(l=>{
+    const done=ST.score>=l.pts[1];
+    const isCur=l.lv===sl.lv;
+    const locked=ST.score<l.pts[0];
+    const item=document.createElement('div');
+    item.className='avatar-item'+(done?' done':isCur?' current':locked?' locked':'');
+    item.innerHTML=`
+      <div class="ava-fig">
+        ${isCur?`<div class="ava-now">${isJa?'今ここ':'You'}▼</div>`:''}
+        ${l.svg}
+      </div>
+      <div class="ava-lv" style="color:${isCur?l.color:''}">${isJa?l.label:l.labelEn}</div>
+      <div class="ava-pts" style="color:${isCur?l.color:''}">${l.pts[0]}〜</div>`;
+    item.onclick=()=>showLvPopup(l);
+    track.appendChild(item);
+  });
+  setTimeout(()=>{
+    const cur=track.querySelector('.current');
+    if(cur)cur.scrollIntoView({inline:'center',behavior:'smooth'});
+  },200);
+
+  // 標準指標
+  const stdList=document.getElementById('prof-std-list');stdList.innerHTML='';
+  SCORE_LEVELS.forEach(l=>{
+    const isCur=l.lv===sl.lv;
+    const row=document.createElement('div');
+    row.className='std-row'+(isCur?' current-row':'');
+    const chips=[
+      {name:'CEFR',val:l.en.cefr,  color:'#2060a8'},
+      {name:'TOEIC',val:l.en.toeic,color:'#c9943a'},
+      {name:'JLPT', val:l.ja.jlpt, color:'#c04848'},
+    ];
+    row.innerHTML=`
+      <div class="std-row-head">
+        <span class="std-lv-label" style="color:${l.color}">Lv.${l.lv} ${isJa?l.label:l.labelEn}</span>
+        ${isCur?`<span class="std-now-badge">${isJa?'← 現在':'← You'}</span>`:''}
+      </div>
+      <div class="std-chips">${chips.map(c=>`<span class="std-chip" style="background:${c.color}18;border:1px solid ${c.color}40;color:var(--text2)"><span style="font-weight:700;color:${c.color}">${c.name}</span> ${c.val}</span>`).join('')}</div>`;
+    stdList.appendChild(row);
+  });
+
+  // AIカードのテキスト更新
+  const weakCount=getWeakItems(ST.learnLang).length;
+  setT('ai-card-title', isJa?'AI弱点分析':'AI Weakness Analysis');
+  const analyzeBtn=g('ai-analyze-btn');
+  if(analyzeBtn){
+    analyzeBtn.textContent=isJa
+      ?`🔍 弱点を分析する${weakCount>0?' ('+weakCount+'語の苦手データあり)':''}`
+      :`🔍 Analyze weaknesses${weakCount>0?' ('+weakCount+' words tracked)':''}`;
+  }
+  setT('ai-result-title', isJa?'AI分析レポート':'AI Analysis Report');
+}
+
+function showLvPopup(l){
+  // シンプルなアラートで詳細を表示（将来的にはボトムシートに）
+  const isJa=ST.uiLang==='ja';
+  alert(`Lv.${l.lv} ${isJa?l.label:l.labelEn}（${l.age}相当）\n\nスコア: ${l.pts[0]}〜${l.pts[1]}点\nCEFR: ${l.en.cefr} / TOEIC: ${l.en.toeic}\nJLPT: ${l.ja.jlpt}\n\n${isJa?l.desc:l.descEn}`);
+}
+
+// ========================
+// NAVIGATION
+// ========================
+function navTo(dest){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-'+dest)?.classList.add('active');
+  if(dest==='map'){buildMap();showScreen('screen-map');}
+  else if(dest==='profile'){buildProfile();showScreen('screen-profile');}
+  else if(dest==='weak'){buildWeakScreen();showScreen('screen-weak');}
+  else if(dest==='conv'){buildConvScreen();showScreen('screen-conv');}
+}
+
+// ========================
+// ========================
+// UTILS
+// ========================
+function g(id){return document.getElementById(id);}
+function setT(id,t){const e=g(id);if(e)e.textContent=t;}
+function alert2(msg){const el=g('alert-box');if(!el)return;el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',5000);}
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el = g(id);
+  if(!el){ console.warn('showScreen: not found', id); return; }
+  el.classList.add('active');
+  window.scrollTo(0,0);
+  const showNav=['screen-map','screen-profile','screen-weak','screen-conv'].includes(id);
+  const nav=g('bottom-nav');
+  if(nav) nav.style.display=showNav?'flex':'none';
+  if(id!=='screen-practice'){
+    g('screen-practice')?.querySelector('.prac-header')?.classList.remove('weak-mode');
+    const fill=g('q-bar-fill');fill?.classList.remove('weak-mode');
+  }
+  const vgb=g('voice-guide-btn');
+  if(vgb) vgb.classList.toggle('show',['screen-map','screen-practice'].includes(id));
+}
+function goMap(){
+  if(Q.isRec)stopRec();
+  if(Q.isTTS&&window.speechSynthesis)window.speechSynthesis.cancel();
+  buildMap();showScreen('screen-map');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  g('nav-map')?.classList.add('active');
+}
+
+// INIT
+loadST();
+if(!ST.weak) ST.weak={};
+if(!ST.score&&ST.xp) ST.score=Math.min(ST.xp,1000);
+updateNavLabels();
+if(localStorage.getItem('kl_state')&&(ST.score>0||Object.keys(ST.stars).length>0)){
+  buildMap();showScreen('screen-map');
+} else {
+  showScreen('screen-lang');
+}
+if('speechSynthesis' in window){window.speechSynthesis.onvoiceschanged=loadVoices;loadVoices();}
+
+
+// ナビラベル更新
+function updateNavLabels(){
+  const isJa=ST.uiLang==='ja';
+  setT('nav-label-map',    isJa?'地図':'Map');
+  setT('nav-label-conv',   isJa?'会話':'Chat');
+  setT('nav-label-weak',   isJa?'苦手':'Review');
+  setT('nav-label-profile',isJa?'レベル':'Level');
+}
+
+// ========================
+// 会話練習モード
+// ========================
+const SCENARIOS = {
+  ja:[
+    {id:'cafe',    icon:'☕', title:'カフェで注文',      desc:'コーヒーや食べ物を注文する練習',       level:'Lv.3〜5', aiRole:'カフェの店員',   situation:'お客様がカフェに入ってきました。'},
+    {id:'shop',    icon:'🛒', title:'お店で買い物',      desc:'値段を聞いたり、商品を選ぶ練習',       level:'Lv.3〜5', aiRole:'店員',           situation:'お客様がお店に入ってきました。'},
+    {id:'direction',icon:'🗺', title:'道を聞く',          desc:'道案内をする・してもらう練習',         level:'Lv.4〜6', aiRole:'通行人',         situation:'観光客らしい人が近づいてきました。'},
+    {id:'hospital',icon:'🏥', title:'病院で受診',        desc:'症状を説明したり、診察を受ける練習',   level:'Lv.5〜7', aiRole:'医師・受付',     situation:'患者さんが受付に来ました。'},
+    {id:'hotel',   icon:'🏨', title:'ホテルでチェックイン', desc:'ホテルのチェックインや問い合わせ',   level:'Lv.5〜7', aiRole:'ホテルスタッフ', situation:'ゲストがフロントに来ました。'},
+    {id:'free',    icon:'🎤', title:'自由会話',          desc:'何でも話しかけてOK。AIが修正します',   level:'全レベル', aiRole:'日本語の先生',   situation:'あなたと日本語で自由に会話しましょう。'},
+  ],
+  en:[
+    {id:'cafe',    icon:'☕', title:'At the café',      desc:'Order coffee and food in English',       level:'Lv.3〜5', aiRole:'barista',        situation:'A customer walks into the café.'},
+    {id:'shop',    icon:'🛒', title:'Shopping',         desc:'Ask about prices and choose items',      level:'Lv.3〜5', aiRole:'shop assistant', situation:'A customer enters the shop.'},
+    {id:'direction',icon:'🗺', title:'Asking directions',desc:'Ask for and give directions',           level:'Lv.4〜6', aiRole:'local person',   situation:'A tourist approaches you on the street.'},
+    {id:'hospital',icon:'🏥', title:'At the doctor',   desc:'Explain symptoms and visit a clinic',    level:'Lv.5〜7', aiRole:'doctor',         situation:'A patient arrives at the reception.'},
+    {id:'hotel',   icon:'🏨', title:'Hotel check-in',  desc:'Check in and ask about hotel services',  level:'Lv.5〜7', aiRole:'hotel staff',    situation:'A guest approaches the front desk.'},
+    {id:'free',    icon:'🎤', title:'Free conversation',desc:'Talk about anything. AI corrects you',   level:'All levels',aiRole:'English teacher',situation:"Let's have a free conversation in English."},
+  ]
+};
+
+let convState = {
+  scenario: null,
+  history: [],       // [{role:'ai'|'user'|'feedback', text}]
+  isRec: false, rec: null, wt: null,
+  isTTS: false,
+  turnCount: 0,
+};
+
+function buildConvScreen(){
+  const isJa = ST.uiLang==='ja';
+  const body = g('conv-body');
+  body.innerHTML = '';
+  setT('conv-header-title', isJa ? '💬 会話練習' : '💬 Conversation');
+  setT('conv-header-sub',   isJa ? 'AIとシナリオ会話で実践練習しよう' : 'Practice real conversations with AI');
+
+  const title = document.createElement('div');
+  title.style.cssText = 'font-size:13px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px';
+  title.textContent = isJa ? 'シナリオを選んでください' : 'Choose a scenario';
+  body.appendChild(title);
+
+  const scenarios = SCENARIOS[ST.learnLang];
+  const grid = document.createElement('div');
+  grid.className = 'scenario-grid';
+  scenarios.forEach(sc => {
+    const card = document.createElement('div');
+    card.className = 'scenario-card';
+    card.innerHTML = `
+      <div class="scenario-icon">${sc.icon}</div>
+      <div class="scenario-info">
+        <div class="scenario-title">${sc.title}</div>
+        <div class="scenario-desc">${sc.desc}</div>
+        <span class="scenario-level">${sc.level}</span>
+      </div>`;
+    card.onclick = () => startConvScenario(sc);
+    grid.appendChild(card);
+  });
+  body.appendChild(grid);
+}
+
+
+async function startConvScenario(sc){
+  const isJa=ST.uiLang==='ja';
+  convState.scenario=sc; convState.history=[]; convState.turnCount=0;
+  convState.isRec=false; convState.isTTS=false;
+
+  await requestMicOnce();
+
+  const body=g('conv-body');
+  body.innerHTML=`
+    <div class="conv-scene">
+      <div class="conv-scene-title">${isJa?'🎬 シナリオ':'🎬 Scenario'}: ${sc.title}</div>
+      <div class="conv-scene-desc" id="conv-scene-sub">${sc.situation}</div>
+    </div>
+    <div class="chat-area" id="chat-area"></div>
+    <div class="conv-input-area">
+      <div class="conv-hint" id="conv-hint">${isJa?'AIが話しかけます。話しかけられたらそのまま返答してください。ボタン不要です。':'AI will speak first. Just reply naturally — no buttons needed.'}</div>
+      <div class="conv-mic-row">
+        <div id="conv-mic-indicator" style="width:48px;height:48px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all 0.3s">🎙</div>
+        <div style="flex:1">
+          <div class="conv-interim" id="conv-interim" style="font-size:14px;min-height:24px;color:var(--text2)">${isJa?'準備中...':'Preparing...'}</div>
+          <div id="conv-wave" style="display:flex;gap:2px;height:16px;align-items:center;opacity:0;transition:opacity 0.3s">
+            ${[1,2,3,4,5,6].map(i=>`<div id="cw${i}" style="width:3px;border-radius:2px;background:var(--green);height:8px;transition:height 0.07s"></div>`).join('')}
+          </div>
+        </div>
+        <button onclick="endConvSession()" style="padding:7px 12px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);color:var(--text3);font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0">${isJa?'終了':'End'}</button>
+      </div>
+    </div>`;
+
+  // AI最初のターン
+  await convAITurn('__start__');
+}
+
+async function convAITurn(userInput){
+  const isJa=ST.uiLang==='ja';
+  const sc=convState.scenario;
+  if(!sc) return;
+
+  // タイピング表示
+  convSetStatus(isJa?'💬 考えています…':'💬 Thinking...');
+  convSetIndicator('thinking');
+
+  const systemPrompt=`You are ${sc.aiRole} in this scenario: ${sc.title}.
+Situation: ${sc.situation}
+The student is practicing ${ST.learnLang==='en'?'English':'Japanese'}.
+
+CRITICAL RULES:
+1. Stay in character as ${sc.aiRole} throughout
+2. Respond in ${ST.learnLang==='en'?'English':'Japanese'} naturally
+3. After your reply, add a line starting with "EVAL:" containing a JSON object: {"score":0-100,"issue":"brief issue in Japanese or empty if none","hint":"one helpful suggestion in Japanese or empty"}
+4. Keep each reply SHORT (1-3 sentences)
+5. Drive the scenario forward with natural follow-up questions
+6. If student is struggling (score<50 twice in a row), simplify your next question
+7. For scenario "free": be a warm supportive teacher
+
+History: ${JSON.stringify(convState.history.slice(-8))}
+User just said: "${userInput==='__start__'?'(scenario is starting)':userInput}"
+Turn: ${convState.turnCount+1}`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+        messages:[{role:'user',content:systemPrompt}]})
+    });
+    const data=await res.json();
+    const full=(data.content?.find(x=>x.type==='text')?.text||'').trim();
+
+    // EVALと本文を分離
+    const evalMatch=full.match(/EVAL:\s*(\{.*\})/s);
+    const reply=full.replace(/EVAL:.*$/s,'').trim();
+    let evalData={score:70,issue:'',hint:''};
+    if(evalMatch){try{evalData=JSON.parse(evalMatch[1]);}catch(e){}}
+
+    // バブル追加
+    addChatBubble('ai',reply);
+    convState.history.push({role:'assistant',content:reply});
+
+    // フィードバック（問題がある場合）
+    if(userInput!=='__start__'&&evalData.issue){
+      addChatBubble('feedback',evalData.issue+(evalData.hint?` → ${evalData.hint}`:''));
+    }
+
+    convState.turnCount++;
+
+    // TTS再生 → 完了後に自動でマイクON
+    convSpeakThenListen(reply);
+
+  }catch(err){
+    convSetStatus(isJa?'接続エラー。インターネットを確認してください。':'Connection error.');
+    convSetIndicator('idle');
+  }
+}
+
+function convSpeakThenListen(text){
+  convSetIndicator('speaking');
+  convSetStatus(ST.uiLang==='ja'?'🔊 話しています…':'🔊 Speaking...');
+  if(!('speechSynthesis' in window)){convStartMic();return;}
+  window.speechSynthesis.cancel();
+  loadVoices();
+  const utt=new SpeechSynthesisUtterance(text);
+  utt.lang=pack().ttsLang; utt.rate=0.9;
+  if(Q.voice)utt.voice=Q.voice;
+  utt.onend=()=>{convState.isTTS=false;if(convState.scenario)convStartMic();};
+  utt.onerror=()=>{convState.isTTS=false;if(convState.scenario)convStartMic();};
+  convState.isTTS=true;
+  window.speechSynthesis.speak(utt);
+}
+
+function convStartMic(){
+  if(!convState.scenario) return;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR) return;
+  const isJa=ST.uiLang==='ja';
+  if(convState.rec) try{convState.rec.stop();}catch(e){}
+  convState.rec=new SR();
+  convState.rec.lang=pack().sttLang;
+  convState.rec.interimResults=true;
+  convState.rec.continuous=false;
+  convState.rec.maxAlternatives=1;
+
+  convState.rec.onstart=()=>{
+    convState.isRec=true;
+    convSetIndicator('listening');
+    convSetStatus(isJa?'🎤 話してください…':'🎤 Your turn...');
+    const cw=g('conv-wave');if(cw)cw.style.opacity='1';
+    clearInterval(convState.wt);
+    convState.wt=setInterval(()=>{
+      for(let i=1;i<=6;i++){const b=g('cw'+i);if(b)b.style.height=(4+Math.random()*14)+'px';}
+    },80);
+    // 8秒無音タイムアウト
+    clearTimeout(convState.silenceTimer);
+    convState.silenceTimer=setTimeout(()=>{
+      if(convState.isRec&&convState.scenario){
+        convState.rec?.stop();
+        const prompt=isJa?'（無音 — もう一度話してみてください）':'(silence — try speaking again)';
+        convState.history.push({role:'user',content:prompt});
+        convAITurn(prompt);
+      }
+    },8000);
+  };
+
+  convState.rec.onresult=e=>{
+    clearTimeout(convState.silenceTimer);
+    let interim='',final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)final+=e.results[i][0].transcript;
+      else interim+=e.results[i][0].transcript;
+    }
+    const el=g('conv-interim');
+    if(el)el.textContent=interim||final||'...';
+    if(final){
+      convState.isRec=false;
+      convStopMicClean();
+      addChatBubble('user',final.trim());
+      convState.history.push({role:'user',content:final.trim()});
+      convAITurn(final.trim());
+    }
+  };
+
+  convState.rec.onerror=e=>{
+    convStopMicClean();
+    if(e.error==='no-speech'&&convState.scenario){
+      setTimeout(()=>convStartMic(),1000);
+    }
+  };
+  convState.rec.onend=()=>{if(convState.isRec)convStopMicClean();};
+  try{convState.rec.start();}catch(e){}
+}
+
+function convStopMicClean(){
+  clearInterval(convState.wt);convState.wt=null;convState.isRec=false;
+  clearTimeout(convState.silenceTimer);
+  const cw=g('conv-wave');if(cw)cw.style.opacity='0';
+}
+
+function convSetIndicator(state){
+  const el=g('conv-mic-indicator');if(!el)return;
+  const styles={
+    idle:    'background:var(--surface2);border-color:var(--border);',
+    listening:'background:#edf7f1;border-color:var(--green);box-shadow:0 0 0 3px rgba(26,107,74,0.15);',
+    speaking: 'background:#e0eaf8;border-color:#2040a0;',
+    thinking: 'background:var(--amber-light);border-color:#c07010;',
+  };
+  el.style.cssText='width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all 0.3s;border:2px solid;'+styles[state];
+  el.textContent={idle:'🎙',listening:'🎤',speaking:'🔊',thinking:'💭'}[state]||'🎙';
+}
+
+function convSetStatus(text){
+  const el=g('conv-hint');if(el)el.innerHTML=text;
+  const el2=g('conv-interim');if(el2)el2.textContent='';
+}
+
+function endConvSession(){
+  const isJa=ST.uiLang==='ja';
+  convState.scenario=null;
+  convState.isRec=false;
+  if(convState.rec)try{convState.rec.stop();}catch(e){}
+  clearInterval(convState.wt);
+  clearTimeout(convState.silenceTimer);
+  if(convState.isTTS)window.speechSynthesis?.cancel();
+  buildConvScreen();
+}
+
+function replayLastAI(){
+  // 最後のAIバブルのテキストを再生
+  const bubbles=document.querySelectorAll('.bubble-ai');
+  const last=bubbles[bubbles.length-1];
+  if(last)speakConv(last.textContent.replace(convState.scenario?.aiRole+'\n',''));
+}
+
+// ========================
+// 音声ガイド（画面読み上げ）
+// ========================
+function readScreenAloud(){
+  const isJa = ST.uiLang==='ja';
+  let textToRead = '';
+  const activeScreen = document.querySelector('.screen.active');
+  if(!activeScreen) return;
+  const id = activeScreen.id;
+  if(id==='screen-map'){
+    const weakCount = getWeakItems(ST.learnLang).length;
+    const sl = getCurrentScoreLevel();
+    textToRead = isJa
+      ? `現在のレベルは${sl.label}、スコアは${ST.score}点です。${weakCount>0?`苦手単語が${weakCount}語あります。`:''}学習を続けましょう。`
+      : `Your current level is ${sl.labelEn}. Your score is ${ST.score} out of 1000. ${weakCount>0?`You have ${weakCount} words to review.`:''}Keep practicing!`;
+  } else if(id==='screen-practice'){
+    const qNum = g('q-label')?.textContent||'';
+    textToRead = isJa
+      ? `練習中です。${qNum}。マイクボタンを押して話してください。`
+      : `Practice in progress. ${qNum}. Press the microphone button to speak.`;
+  } else {
+    textToRead = isJa ? 'この画面を読み上げます。' : 'Reading this screen.';
+  }
+  if(!textToRead) return;
+  if(window.speechSynthesis){
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(textToRead);
+    utt.lang = 'ja-JP';
+    utt.rate = 0.95;
+    window.speechSynthesis.speak(utt);
+  }
+}
+
+// PWA
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  if(!localStorage.getItem('kl_pwa_installed'))
+    setTimeout(()=>{ /* optional install banner */ },3000);
+});
+</script>
+</body>
+</html>
