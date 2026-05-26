@@ -2452,7 +2452,7 @@ History: ${JSON.stringify(plConv.history.slice(-6))}
 User just said: "${userInput==='__start__'?'(not started yet)':userInput}"`;
 
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch('/api/chat',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,
         messages:[{role:'user',content:systemPrompt}]})
@@ -2732,7 +2732,7 @@ Please summarize in 3 points (under 150 words total):
 3. Next step advice (1 sentence)`;
 
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch('/api/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
@@ -3287,7 +3287,7 @@ User just said: "${userInput==='__start__'?'(scenario is starting)':userInput}"
 Turn: ${convState.turnCount+1}`;
 
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch('/api/chat',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
         messages:[{role:'user',content:systemPrompt}]})
