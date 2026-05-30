@@ -7,13 +7,21 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { model, max_tokens, messages, system } = req.body;
+    const { max_tokens, messages, system } = req.body;
 
-    // Gemini API用にメッセージを変換
-    const contents = messages.map(m => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content }]
-    }));
+    // messagesのcontentが配列の場合も文字列に変換
+    const contents = messages.map(m => {
+      let text = '';
+      if (typeof m.content === 'string') {
+        text = m.content;
+      } else if (Array.isArray(m.content)) {
+        text = m.content.map(c => c.text || '').join('');
+      }
+      return {
+        role: m.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text }]
+      };
+    });
 
     const geminiBody = {
       contents,
@@ -34,13 +42,23 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // Anthropic形式に変換して返す（フロントエンドの変更不要）
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    // デバッグ用にレスポンス全体をログ
+    console.log('Gemini response:', JSON.stringify(data).slice(0, 500));
+
+    if (data.error) {
+      console.error('Gemini error:', data.error);
+      return res.status(400).json({ error: data.error.message });
+    }
+
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response';
+    console.log('Extracted text:', text.slice(0, 100));
+
     return res.status(200).json({
       content: [{ type: 'text', text }]
     });
 
   } catch (error) {
+    console.error('Handler error:', error);
     return res.status(500).json({ error: error.message });
   }
 }
