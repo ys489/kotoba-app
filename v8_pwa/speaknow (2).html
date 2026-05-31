@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SpeakNow</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e1a;--surface:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.12);
+  --text:#f0f4ff;--text2:rgba(255,255,255,0.55);--text3:rgba(255,255,255,0.25);
+  --blue:#4d9fff;--green:#3ecf8e;--amber:#f5a623;--red:#ff6b6b;--purple:#a78bfa;
+}
+body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden}
+button{font-family:inherit;cursor:pointer;border:none;transition:all 0.15s}
+*{-webkit-tap-highlight-color:transparent}
+
+/* HOME */
+#screen-home{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 20px;text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(77,159,255,0.15),transparent 70%)}
+.logo-icon{font-size:52px;display:block;margin-bottom:8px}
+.app-name{font-size:28px;font-weight:800;letter-spacing:-0.03em;background:linear-gradient(135deg,#4d9fff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.app-tagline{font-size:13px;color:var(--text2);margin-top:4px;margin-bottom:28px}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:420px;margin-bottom:20px}
+.sc-btn{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:left;color:var(--text)}
+.sc-btn:hover,.sc-btn.sel{border-color:var(--blue);background:rgba(77,159,255,0.1)}
+.sc-btn.sel{box-shadow:0 0 0 1px var(--blue)}
+.sc-emoji{font-size:24px;display:block;margin-bottom:6px}
+.sc-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.sc-hint{font-size:10px;color:var(--text2);line-height:1.3}
+.go-btn{width:100%;max-width:420px;padding:15px;border-radius:50px;background:linear-gradient(135deg,#1a5fff,#4d9fff);color:#fff;font-size:15px;font-weight:700;box-shadow:0 8px 32px rgba(77,159,255,0.35)}
+.go-btn:hover{transform:translateY(-2px)}
+.go-btn:disabled{opacity:0.3;cursor:not-allowed;transform:none}
+
+/* CONV */
+#screen-conv{display:none;position:relative;height:100vh;overflow:hidden}
+#screen-conv.active{display:block}
+.scene-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;transition:opacity 0.5s}
+.scene-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(10,14,26,0.4) 0%,rgba(10,14,26,0.75) 60%,rgba(10,14,26,0.97) 100%)}
+
+/* ヘッダー */
+.conv-header{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:calc(14px + env(safe-area-inset-top)) 16px 14px}
+.conv-sc-label{display:flex;align-items:center;gap:8px}
+.conv-sc-icon{font-size:20px}
+.conv-sc-name{font-size:14px;font-weight:600;color:#fff}
+.conv-timer{font-size:22px;font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums;background:rgba(77,159,255,0.12);border:1px solid rgba(77,159,255,0.25);padding:4px 12px;border-radius:20px}
+.conv-timer.ready{color:var(--green);border-color:rgba(62,207,142,0.3);background:rgba(62,207,142,0.1)}
+
+/* AIバブル */
+.ai-bubble-area{position:absolute;top:72px;left:16px;right:16px;z-index:10;max-width:520px;margin:0 auto}
+.ai-bubble{background:rgba(255,255,255,0.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.13);border-radius:16px;padding:12px 16px;cursor:pointer;position:relative}
+.ai-role-lbl{font-size:10px;color:var(--blue);font-weight:600;margin-bottom:4px}
+.ai-tap-hint{font-size:11px;color:var(--text2);text-align:center}
+.ai-text-hidden{display:none;font-size:14px;color:#fff;line-height:1.6}
+.ai-text-hidden.show{display:block}
+
+/* ユーザー発話 */
+.user-area{position:absolute;right:16px;z-index:10;bottom:145px;max-width:72%}
+.user-bubble{background:var(--blue);color:#fff;border-radius:16px 16px 4px 16px;padding:10px 14px;font-size:14px;line-height:1.5;display:none}
+.user-bubble.show{display:block;animation:sli 0.2s ease-out}
+@keyframes sli{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
+
+/* 中央ステータス */
+.ctr-status{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;text-align:center;pointer-events:none;transition:opacity 0.3s}
+.ctr-icon{font-size:52px;display:block;margin-bottom:8px}
+.ctr-txt{font-size:14px;color:var(--text2)}
+
+/* 判定バー */
+.judge-bar{position:absolute;bottom:135px;left:16px;right:16px;z-index:10;background:rgba(62,207,142,0.1);backdrop-filter:blur(8px);border:1px solid rgba(62,207,142,0.3);border-radius:12px;padding:10px 14px;display:none;text-align:center}
+.judge-bar.show{display:block;animation:slideup 0.3s ease-out}
+@keyframes slideup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.judge-bar-txt{font-size:12px;color:var(--green);margin-bottom:7px}
+.judge-btn{background:var(--green);color:#fff;padding:7px 18px;border-radius:20px;font-size:13px;font-weight:600}
+
+/* フッター */
+.conv-footer{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:12px 16px calc(18px + env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(10,14,26,0.97),transparent)}
+.mic-row{display:flex;align-items:center;gap:12px}
+.mic-orb{width:58px;height:58px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid var(--border);background:var(--surface);transition:all 0.3s}
+.mic-orb.listening{border-color:var(--green);background:rgba(62,207,142,0.15);box-shadow:0 0 0 6px rgba(62,207,142,0.1),0 0 24px rgba(62,207,142,0.3);animation:orbp 1.2s infinite}
+.mic-orb.speaking{border-color:var(--blue);background:rgba(77,159,255,0.12)}
+.mic-orb.thinking{border-color:var(--amber);background:rgba(245,166,35,0.1)}
+@keyframes orbp{0%,100%{box-shadow:0 0 0 6px rgba(62,207,142,0.1),0 0 24px rgba(62,207,142,0.3)}50%{box-shadow:0 0 0 10px rgba(62,207,142,0.06),0 0 32px rgba(62,207,142,0.4)}}
+.mic-info{flex:1}
+.mic-main{font-size:13px;color:var(--text);margin-bottom:3px;min-height:18px}
+.mic-wave{display:flex;gap:2px;align-items:center;height:16px;opacity:0;transition:opacity 0.2s}
+.mic-wave.show{opacity:1}
+.mw{width:3px;border-radius:2px;background:var(--green);transition:height 0.07s}
+.end-btn-sm{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:12px;backdrop-filter:blur(8px);flex-shrink:0}
+.end-btn-sm:hover{border-color:var(--red);color:var(--red)}
+
+/* REPORT */
+#screen-report{display:none;min-height:100vh;overflow-y:auto;padding:24px 16px 48px;max-width:560px;margin:0 auto}
+#screen-report.active{display:block}
+.rpt-header{text-align:center;margin-bottom:22px;padding-top:16px}
+.rpt-emoji{font-size:48px;margin-bottom:8px}
+.rpt-title{font-size:22px;font-weight:700;margin-bottom:4px}
+.rpt-meta{font-size:13px;color:var(--text2)}
+.total-card{background:linear-gradient(135deg,rgba(77,159,255,0.08),rgba(167,139,250,0.08));border:1px solid var(--border);border-radius:18px;padding:22px;text-align:center;margin-bottom:14px}
+.total-num{font-size:60px;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.total-label{font-size:12px;color:var(--text2);margin-top:4px}
+.total-summary{font-size:13px;color:var(--text);margin-top:12px;line-height:1.7;text-align:left;white-space:pre-line}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.score-item{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px}
+.si-label{font-size:10px;color:var(--text2);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px}
+.si-bar{height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.si-fill{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(0.34,1.2,0.64,1)}
+.si-num{font-size:20px;font-weight:700}
+.si-detail{font-size:11px;color:var(--text2);margin-top:6px;line-height:1.55;white-space:pre-line}
+.fb-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
+.fb-title{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:0.05em;margin-bottom:8px}
+.fb-item{font-size:12px;color:var(--text);padding:8px 10px;border-radius:8px;margin-bottom:6px;line-height:1.6;border-left:3px solid var(--border)}
+.fb-item.g{border-left-color:var(--green);background:rgba(62,207,142,0.06)}
+.fb-item.i{border-left-color:var(--amber);background:rgba(245,166,35,0.06)}
+.rpt-btns{display:flex;gap:10px;margin-top:20px}
+.btn-r{flex:1;padding:13px;border-radius:50px;font-size:14px;font-weight:600;border:1px solid var(--border);background:var(--surface);color:var(--text)}
+.btn-r:hover{border-color:var(--blue);color:var(--blue)}
+.btn-g{flex:1;padding:13px;border-radius:50px;font-size:14px;font-weight:700;background:linear-gradient(135deg,#1a5fff,#4d9fff);color:#fff}
+.loading-rpt{text-align:center;padding:60px 20px;color:var(--text2)}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:360px){.sc-grid{grid-template-columns:1fr}.score-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="screen-home">
+  <span class="logo-icon">🗣️</span>
+  <div class="app-name">SpeakNow</div>
+  <div class="app-tagline">躊躇なく英語を話せるようになろう</div>
+  <div class="sc-grid" id="sc-grid"></div>
+  <button class="go-btn" id="go-btn" onclick="startConv()" disabled>シナリオを選んでください</button>
+</div>
+
+<!-- CONV -->
+<div id="screen-conv">
+  <div class="scene-bg" id="scene-bg"></div>
+  <div class="scene-overlay"></div>
+  <div class="conv-header">
+    <div class="conv-sc-label">
+      <span class="conv-sc-icon" id="conv-icon"></span>
+      <span class="conv-sc-name" id="conv-name"></span>
+    </div>
+    <div class="conv-timer" id="conv-timer">0:00</div>
+  </div>
+
+  <!-- AIバブル（タップで字幕） -->
+  <div class="ai-bubble-area" id="ai-bubble-area" style="display:none" onclick="toggleAI()">
+    <div class="ai-bubble">
+      <div class="ai-role-lbl" id="ai-role-lbl"></div>
+      <div class="ai-tap-hint" id="ai-tap">👆 タップで字幕</div>
+      <div class="ai-text-hidden" id="ai-text"></div>
+    </div>
+  </div>
+
+  <!-- ユーザー発話 -->
+  <div class="user-area">
+    <div class="user-bubble" id="user-bubble"></div>
+  </div>
+
+  <!-- 中央ステータス -->
+  <div class="ctr-status" id="ctr-status">
+    <span class="ctr-icon" id="ctr-icon">🎙</span>
+    <div class="ctr-txt" id="ctr-txt">準備中...</div>
+  </div>
+
+  <!-- 判定バー -->
+  <div class="judge-bar" id="judge-bar">
+    <div class="judge-bar-txt">✨ 1分突破！いつでも判定できます。会話を続けてもOK。</div>
+    <button class="judge-btn" onclick="endConv()">📊 判定する</button>
+  </div>
+
+  <!-- フッター -->
+  <div class="conv-footer">
+    <div class="mic-row">
+      <div class="mic-orb" id="mic-orb">🎙</div>
+      <div class="mic-info">
+        <div class="mic-main" id="mic-main">AIが話しかけます...</div>
+        <div class="mic-wave" id="mic-wave">
+          <div class="mw" id="mw1" style="height:5px"></div>
+          <div class="mw" id="mw2" style="height:9px"></div>
+          <div class="mw" id="mw3" style="height:13px"></div>
+          <div class="mw" id="mw4" style="height:7px"></div>
+          <div class="mw" id="mw5" style="height:11px"></div>
+          <div class="mw" id="mw6" style="height:5px"></div>
+        </div>
+      </div>
+      <button class="end-btn-sm" onclick="endConv()">終了 / 判定</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT -->
+<div id="screen-report">
+  <div id="report-inner"></div>
+</div>
+
+<script>
+const SCENARIOS = [
+  {id:'cafe',   icon:'☕', name:'At the Café',   hint:'ロンドンのカフェで注文', role:'barista',      bg:'linear-gradient(135deg,#1a0e05,#3d1f0a 40%,#2d1505)',
+   sys:"You are a friendly barista at The Daily Grind café in London. Keep responses natural and short (1-3 sentences). Always continue the conversation with a question.",
+   starter:"Good morning! Welcome to The Daily Grind. What can I get started for you today?"},
+  {id:'hotel',  icon:'🏨', name:'Hotel Check-in', hint:'NYのホテルでチェックイン', role:'receptionist', bg:'linear-gradient(135deg,#05101a,#0a2040 40%,#051020)',
+   sys:"You are a professional hotel receptionist at The Grand Hotel New York. Keep responses natural and short (1-3 sentences). Always continue the conversation.",
+   starter:"Good evening! Welcome to The Grand Hotel. May I have your name for the reservation?"},
+  {id:'street', icon:'🗺️', name:'Lost in the City',hint:'道に迷って道を聞く', role:'local',         bg:'linear-gradient(135deg,#0a1505,#1a3010 40%,#0d1a08)',
+   sys:"You are a friendly local in central London. A tourist needs directions. Keep responses natural and short (1-3 sentences). Be helpful.",
+   starter:"Hey, you look a bit lost! Where are you trying to get to? I know this area really well!"},
+  {id:'rest',   icon:'🍽️', name:'Restaurant',    hint:'レストランで食事全体', role:'waiter',        bg:'linear-gradient(135deg,#1a0510,#350d20 40%,#1a0510)',
+   sys:"You are an experienced waiter at a nice restaurant. Keep responses natural and short (1-3 sentences). Guide the customer through ordering.",
+   starter:"Good evening! I'm Alex and I'll be your server tonight. Can I start you off with something to drink?"},
+  {id:'job',    icon:'💼', name:'Job Interview',  hint:'英語で就職面接', role:'interviewer',   bg:'linear-gradient(135deg,#050a1a,#0d1535 40%,#050a1a)',
+   sys:"You are an HR manager conducting a job interview. Ask natural interview questions. Keep responses short (1-3 sentences).",
+   starter:"Thank you for coming in today. Please have a seat. So, could you start by telling me a little about yourself?"},
+  {id:'free',   icon:'🎤', name:'Free Talk',      hint:'自由に何でも話す', role:'friend',        bg:'linear-gradient(135deg,#0a0515,#1a0d30 40%,#0a0515)',
+   sys:"You are a friendly native English speaker who loves conversation. Talk about anything. Keep responses natural and short (1-3 sentences). Always ask follow-up questions.",
+   starter:"Hey! Great to meet you. I love a good chat. What's been the highlight of your week so far?"},
+];
+
+// STATE
+let S={sc:null,history:[],timerSec:0,timerInt:null,
+       isRec:false,isTTS:false,rec:null,wt:null,silTimer:null,
+       sendTimer:null,partialBuf:'',lastSpeechTime:0,
+       active:false,voices:[],voice:null,ttsTimer:null};
+
+// HOME
+function buildHome(){
+  const grid=document.getElementById('sc-grid');
+  SCENARIOS.forEach(sc=>{
+    const btn=document.createElement('button');
+    btn.className='sc-btn';
+    btn.innerHTML=`<span class="sc-emoji">${sc.icon}</span><div class="sc-name">${sc.name}</div><div class="sc-hint">${sc.hint}</div>`;
+    btn.onclick=()=>{
+      document.querySelectorAll('.sc-btn').forEach(b=>b.classList.remove('sel'));
+      btn.classList.add('sel');S.sc=sc;
+      const gb=document.getElementById('go-btn');
+      gb.disabled=false;gb.textContent=`${sc.icon} ${sc.name} を始める →`;
+    };
+    grid.appendChild(btn);
+  });
+}
+
+// START
+async function startConv(){
+  if(!S.sc)return;
+  S.history=[];S.timerSec=0;S.active=true;S.partialBuf='';
+  showScreen('screen-conv');
+  document.getElementById('scene-bg').style.background=S.sc.bg;
+  document.getElementById('conv-icon').textContent=S.sc.icon;
+  document.getElementById('conv-name').textContent=S.sc.name;
+  document.getElementById('ai-role-lbl').textContent=S.sc.role;
+  document.getElementById('ai-bubble-area').style.display='none';
+  document.getElementById('user-bubble').classList.remove('show');
+  document.getElementById('judge-bar').classList.remove('show');
+  document.getElementById('conv-timer').classList.remove('ready');
+  setOrb('idle');setCtr('🎙','準備中...');
+
+  await getMic();
+
+  clearInterval(S.timerInt);
+  S.timerInt=setInterval(()=>{
+    S.timerSec++;
+    const m=Math.floor(S.timerSec/60),s=S.timerSec%60;
+    document.getElementById('conv-timer').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    if(S.timerSec===60){
+      document.getElementById('judge-bar').classList.add('show');
+      document.getElementById('conv-timer').classList.add('ready');
+    }
+  },1000);
+
+  speakAI(S.sc.starter);
+}
+
+// TTS（タイムアウト保険付き）
+function speakAI(text){
+  setOrb('speaking');setCtr('🔊','');
+  showAI(text);
+
+  if(!('speechSynthesis' in window)){afterSpeak();return;}
+  window.speechSynthesis.cancel();
+  loadVoices();
+  const utt=new SpeechSynthesisUtterance(text);
+  utt.lang='en-US';utt.rate=0.92;utt.pitch=1.0;
+  if(S.voice)utt.voice=S.voice;
+  S.isTTS=true;
+
+  // タイムアウト保険
+  clearTimeout(S.ttsTimer);
+  const to=Math.max(3000,text.length*75+2000);
+  S.ttsTimer=setTimeout(()=>{if(S.isTTS){S.isTTS=false;afterSpeak();}},to);
+
+  utt.onend=()=>{clearTimeout(S.ttsTimer);S.isTTS=false;afterSpeak();};
+  utt.onerror=()=>{clearTimeout(S.ttsTimer);S.isTTS=false;afterSpeak();};
+  window.speechSynthesis.speak(utt);
+}
+function afterSpeak(){if(S.active)startListening();}
+
+function showAI(text){
+  const area=document.getElementById('ai-bubble-area');
+  document.getElementById('ai-text').textContent=text;
+  document.getElementById('ai-text').classList.remove('show');  // デフォルト非表示
+  document.getElementById('ai-tap').style.display='block';
+  area.style.display='block';
+}
+function toggleAI(){
+  const t=document.getElementById('ai-text');
+  const h=document.getElementById('ai-tap');
+  t.classList.toggle('show');
+  h.style.display=t.classList.contains('show')?'none':'block';
+}
+
+// STT - 無音検知で送信する方式
+async function getMic(){
+  try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());}catch(e){}
+}
+
+function startListening(){
+  if(!S.active)return;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){setCtr('⚠️','Chrome/Edgeが必要です');return;}
+
+  if(S.rec)try{S.rec.abort();}catch(e){}
+  S.rec=new SR();
+  S.rec.lang='en-US';
+  S.rec.interimResults=true;
+  S.rec.continuous=true;      // 連続認識（途中で切れない）
+  S.rec.maxAlternatives=1;
+  S.partialBuf='';
+  S.lastSpeechTime=Date.now();
+
+  S.rec.onstart=()=>{
+    S.isRec=true;
+    setOrb('listening');
+    setCtr('🎤','話してください...');
+    document.getElementById('mic-main').textContent='🎤 Your turn — speak freely!';
+    document.getElementById('mic-wave').classList.add('show');
+    clearInterval(S.wt);
+    S.wt=setInterval(()=>{
+      for(let i=1;i<=6;i++){const b=document.getElementById('mw'+i);if(b)b.style.height=(3+Math.random()*13)+'px';}
+    },80);
+  };
+
+  S.rec.onresult=e=>{
+    S.lastSpeechTime=Date.now();
+    let interim='',final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)final+=e.results[i][0].transcript+' ';
+      else interim+=e.results[i][0].transcript;
+    }
+    // finalをバッファに追加
+    if(final) S.partialBuf+=final;
+    // 暫定テキストをステータスに表示
+    const display=(S.partialBuf+interim).trim();
+    document.getElementById('mic-main').textContent=display||'🎤 話してください...';
+
+    // 話した後、2秒無音で送信
+    clearTimeout(S.sendTimer);
+    if(S.partialBuf.trim()){
+      S.sendTimer=setTimeout(()=>{
+        if(S.active&&S.partialBuf.trim()){
+          const spoken=S.partialBuf.trim();
+          S.partialBuf='';
+          submitSpeech(spoken);
+        }
+      },2000);
+    }
+  };
+
+  S.rec.onerror=e=>{
+    if(e.error==='no-speech'){
+      // 無音タイムアウト：12秒
+      if(Date.now()-S.lastSpeechTime>12000&&S.active){
+        stopRecClean();
+        const prompt="Take your time! Feel free to say anything that comes to mind.";
+        S.history.push({role:'assistant',content:prompt});
+        speakAI(prompt);
+      }
+    } else {
+      stopRecClean();
+      if(S.active)setTimeout(()=>startListening(),1500);
+    }
+  };
+  S.rec.onend=()=>{
+    stopRecClean();
+    // 認識が途切れたら再起動（continuousモードでも切れる場合がある）
+    if(S.active&&S.isRec===false&&!S.isTTS){
+      setTimeout(()=>startListening(),500);
+    }
+  };
+
+  try{S.rec.start();}catch(e){}
+}
+
+function submitSpeech(spoken){
+  stopRecClean();
+  // ユーザーバブル表示（3秒後に消える）
+  const ub=document.getElementById('user-bubble');
+  ub.textContent=spoken;ub.classList.add('show');
+  setTimeout(()=>ub.classList.remove('show'),3000);
+  S.history.push({role:'user',content:spoken});
+  aiReply(spoken);
+}
+
+function stopRecClean(){
+  clearTimeout(S.sendTimer);S.sendTimer=null;
+  clearInterval(S.wt);S.wt=null;S.isRec=false;
+  document.getElementById('mic-wave').classList.remove('show');
+  if(S.rec)try{S.rec.abort();}catch(e){}
+}
+
+// AI REPLY
+async function aiReply(userInput){
+  if(!S.active)return;
+  setOrb('thinking');
+  setCtr('💭','');
+  document.getElementById('mic-main').textContent='AIが考えています...';
+
+  const msgs=S.history.map(h=>({role:h.role,content:h.content}));
+
+  try{
+    const res=await fetch('/api/chat',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({max_tokens:120,system:S.sc.sys,messages:msgs})
+    });
+    const data=await res.json();
+    const text=(data.content?.[0]?.text||'').trim();
+    if(!text||data.error){
+      const fb="That's interesting! Please tell me more.";
+      S.history.push({role:'assistant',content:fb});speakAI(fb);return;
+    }
+    S.history.push({role:'assistant',content:text});
+    speakAI(text);
+  }catch(e){
+    const fb="Sorry, could you say that again?";
+    S.history.push({role:'assistant',content:fb});speakAI(fb);
+  }
+}
+
+// END & REPORT
+async function endConv(){
+  if(!S.active)return;
+  S.active=false;
+  clearInterval(S.timerInt);
+  clearTimeout(S.silTimer);clearTimeout(S.ttsTimer);clearTimeout(S.sendTimer);clearInterval(S.wt);
+  if(S.rec)try{S.rec.abort();}catch(e){}
+  window.speechSynthesis?.cancel();
+
+  showScreen('screen-report');
+  document.getElementById('report-inner').innerHTML=`<div class="loading-rpt"><div class="spinner"></div><div>会話を分析中...</div><div style="font-size:11px;margin-top:6px;opacity:0.5">発音・文法・語彙・流暢さを詳しく評価しています</div></div>`;
+
+  const dur=S.timerSec;
+  const userMsgs=S.history.filter(h=>h.role==='user');
+  const userText=userMsgs.map(h=>h.content).join('\n');
+  const transcript=S.history.map(h=>`${h.role==='user'?'You':S.sc.role}: ${h.content}`).join('\n');
+
+  const prompt=`You are a strict but encouraging English speaking coach. Analyze this conversation carefully.
+
+Scenario: ${S.sc.name}
+Duration: ${Math.floor(dur/60)}m ${dur%60}s
+User spoke ${userMsgs.length} times.
+
+Full transcript:
+${transcript}
+
+User's actual utterances:
+${userText}
+
+Analyze SPECIFICALLY based on what the user actually said. Be honest and direct.
+
+Return ONLY this JSON (no markdown, no extra text):
+{
+  "totalScore": <0-100, be honest - if conversation barely worked give 30-50>,
+  "grade": "<A+/A/B+/B/C+/C/D/F>",
+  "summary": "<Honest 2-3 sentence assessment in Japanese. Mention specific things they said.>",
+  "scores": {
+    "fluency": {"score":<0-100>,"detail":"<Japanese: Was the conversation smooth? Mention specific pauses or flow issues. Quote actual utterances.>"},
+    "pronunciation": {"score":<0-100>,"detail":"<Japanese: Specific sounds that were likely mispronounced based on Japanese speaker patterns. E.g. RとLの混同、THの発音、語尾の子音など。Be specific.>"},
+    "grammar": {"score":<0-100>,"detail":"<Japanese: Quote specific grammatical errors from their utterances and show corrections. E.g. 「I want to take your menu」→「I would like to see the menu, please」など>"},
+    "vocabulary": {"score":<0-100>,"detail":"<Japanese: Suggest better/more natural word choices for what they actually said. Be specific with examples.>"}
+  },
+  "good": ["<specific good point referencing actual utterance>","<another specific good point>"],
+  "improve": ["<specific improvement with before/after example in Japanese>","<second specific improvement>","<third specific improvement>"]
+}`;
+
+  try{
+    const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'';
+    const m=text.match(/\{[\s\S]*\}/);
+    if(!m)throw new Error('no json');
+    renderReport(JSON.parse(m[0]),dur,userMsgs.length);
+  }catch(e){
+    renderReport({
+      totalScore:userMsgs.length>3?55:35,grade:userMsgs.length>3?'C':'D',
+      summary:`${Math.floor(dur/60)}分${dur%60}秒、${userMsgs.length}回発言しました。${userMsgs.length<3?'会話がまだ少ないです。もっと話してみましょう。':'会話を続けることができました。'}`,
+      scores:{
+        fluency:{score:userMsgs.length>3?60:35,detail:'会話の流暢さを評価するにはもう少しデータが必要です。'},
+        pronunciation:{score:55,detail:'日本語話者に多い課題: RとLの区別（right/light）、THの発音（the/this）、語尾の子音（want/wanted）に注意しましょう。'},
+        grammar:{score:55,detail:'基本的な英語表現を使えています。より自然な表現を練習しましょう。'},
+        vocabulary:{score:55,detail:'もっと多様な語彙を使ってみましょう。'}
+      },
+      good:['英語で話そうとする姿勢が大切です','会話を始めることができました'],
+      improve:['もっとゆっくり、はっきり話してみましょう','文章を最後まで言い切る練習をしましょう','「I would like...」「Could I...」などの丁寧表現を使ってみましょう']
+    },dur,userMsgs.length);
+  }
+}
+
+function renderReport(r,dur,turns){
+  const sc=S.sc;
+  const cols={fluency:'#4d9fff',pronunciation:'#a78bfa',grammar:'#3ecf8e',vocabulary:'#f5a623'};
+  const labels={fluency:'流暢さ',pronunciation:'発音',grammar:'文法',vocabulary:'語彙'};
+  const ge={'A+':'🏆','A':'🥇','B+':'🥈','B':'🥈','C+':'🥉','C':'🥉','D':'💪','F':'💪'};
+  document.getElementById('report-inner').innerHTML=`
+    <div class="rpt-header">
+      <div class="rpt-emoji">${ge[r.grade]||'📊'}</div>
+      <div class="rpt-title">${sc.icon} ${sc.name}</div>
+      <div class="rpt-meta">${Math.floor(dur/60)}分${dur%60}秒 ／ ${turns}回発言 ／ グレード ${r.grade}</div>
+    </div>
+    <div class="total-card">
+      <div class="total-num">${r.totalScore}</div>
+      <div class="total-label">総合スコア / 100点</div>
+      <div class="total-summary">${r.summary}</div>
+    </div>
+    <div class="score-grid">
+      ${Object.entries(r.scores).map(([k,v])=>`
+        <div class="score-item">
+          <div class="si-label">${labels[k]||k}</div>
+          <div class="si-bar"><div class="si-fill" style="width:${v.score}%;background:${cols[k]}"></div></div>
+          <div class="si-num" style="color:${cols[k]}">${v.score}</div>
+          <div class="si-detail">${v.detail}</div>
+        </div>`).join('')}
+    </div>
+    <div class="fb-card">
+      <div class="fb-title">✅ 良かった点</div>
+      ${(r.good||[]).map(g=>`<div class="fb-item g">${g}</div>`).join('')}
+    </div>
+    <div class="fb-card">
+      <div class="fb-title">📈 改善ポイント（具体例つき）</div>
+      ${(r.improve||[]).map(i=>`<div class="fb-item i">${i}</div>`).join('')}
+    </div>
+    <div class="rpt-btns">
+      <button class="btn-r" onclick="retry()">🔄 もう一度</button>
+      <button class="btn-g" onclick="goHome()">🏠 ホームへ</button>
+    </div>`;
+}
+
+// HELPERS
+function setOrb(s){
+  const el=document.getElementById('mic-orb');
+  const map={idle:{e:'🎙',c:''},listening:{e:'🎤',c:'listening'},speaking:{e:'🔊',c:'speaking'},thinking:{e:'💭',c:'thinking'}};
+  const st=map[s]||map.idle;
+  el.textContent=st.e;el.className='mic-orb '+(st.c||'');
+}
+function setCtr(icon,text){
+  document.getElementById('ctr-icon').textContent=icon;
+  document.getElementById('ctr-txt').textContent=text;
+}
+function loadVoices(){
+  S.voices=window.speechSynthesis.getVoices();
+  S.voice=S.voices.find(v=>v.lang==='en-US'&&v.name.toLowerCase().includes('google'))
+    ||S.voices.find(v=>v.lang==='en-US')
+    ||S.voices.find(v=>v.lang.startsWith('en'))||null;
+}
+function showScreen(id){
+  ['screen-home','screen-conv','screen-report'].forEach(s=>{
+    const el=document.getElementById(s);el.style.display='none';el.classList.remove('active');
+  });
+  const el=document.getElementById(id);
+  el.style.display=id==='screen-home'?'flex':'block';
+  el.classList.add('active');
+}
+function retry(){if(S.sc)startConv();}
+function goHome(){showScreen('screen-home');}
+
+buildHome();
+if('speechSynthesis' in window){window.speechSynthesis.onvoiceschanged=loadVoices;loadVoices();}
+</script>
+</body>
+</html>
